@@ -22,6 +22,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
     Route::post('/auth/google/disconnect', [GoogleAuthController::class, 'disconnect'])->name('auth.google.disconnect');
+
+    Route::post('/auth/google/sync', [GoogleAuthController::class, 'syncSitemaps'])->name('sitemaps.sync');
+    Route::post('/auth/google/resync', [GoogleAuthController::class, 'resyncSitemaps'])->name('sitemaps.resync');
 });
 
 require __DIR__ . '/auth.php';

@@ -36,6 +36,11 @@ class User extends Authenticatable
         'google_refresh_token',
     ];
 
+    public function sitemaps()
+    {
+        return $this->hasMany(Sitemap::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
