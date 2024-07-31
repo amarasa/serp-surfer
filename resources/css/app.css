@@ -1,3 +1,45 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.loading-spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px; /* Ensures it is on the line below */
+}
+
+.loading-spinner {
+    animation: spin 2s linear infinite, colorChange 6s infinite;
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    margin-left: 5px; /* Adds space between text and spinner */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes colorChange {
+    0% {
+        color: #064789;
+    }
+    25% {
+        color: #427aa1;
+    }
+    50% {
+        color: #ebf2fa;
+    }
+    75% {
+        color: #679436;
+    }
+    100% {
+        color: #a5be00;
+    }
+}
