@@ -69,6 +69,7 @@
                                     @endphp
                                     @if ($totalUrls > 0)
                                     {{ $processedCount }} of {{ $totalUrls }} URLs Processed
+                                    <span class="">currently processing</span>
                                     @else
                                     Not yet processed
                                     @endif
