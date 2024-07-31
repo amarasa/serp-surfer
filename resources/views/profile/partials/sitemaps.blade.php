@@ -62,7 +62,7 @@
                             @foreach($sitemaps as $sitemap)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    {{ $sitemap->url }}
+                                    <a href="{{ $sitemap->url }}" target="_blank">{{ $sitemap->url }}</a>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-300">
                                     {{ $sitemap->is_index ? 'True' : 'False' }}
