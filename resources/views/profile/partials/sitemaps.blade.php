@@ -64,9 +64,11 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-300">
                                     @php
                                     $queuedCount = $sitemap->queuedUrls()->count();
+                                    $processedCount = $sitemap->sitemapUrls()->count();
+                                    $totalUrls = $queuedCount + $processedCount;
                                     @endphp
-                                    @if ($queuedCount > 0)
-                                    {{ $queuedCount }} URLs in Queue
+                                    @if ($totalUrls > 0)
+                                    {{ $processedCount }} of {{ $totalUrls }} URLs Processed
                                     @else
                                     Not yet processed
                                     @endif
@@ -75,10 +77,11 @@
                                     <form method="POST" action="{{ route('sitemap.queue', $sitemap->id) }}">
                                         @csrf
                                         <button type="submit" class="text-indigo-600 hover:text-indigo-900 focus:outline-none">
-                                            {{ $queuedCount > 0 ? 'Re-process Sitemap' : 'Process Sitemap' }}
+                                            {{ $totalUrls > 0 ? 'Re-process Sitemap' : 'Process Sitemap' }}
                                         </button>
                                     </form>
                                 </td>
+
 
                             </tr>
                             @endforeach
