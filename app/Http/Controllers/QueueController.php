@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sitemap;
+use App\Models\SitemapUrl;
 use App\Models\QueuedUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -17,6 +18,9 @@ class QueueController extends Controller
 
             // Delete all existing queued URLs for the sitemap to avoid duplicates
             QueuedUrl::where('sitemap_id', $sitemap->id)->delete();
+
+            // Delete all existing processed URLs for the sitemap to avoid duplicates
+            SitemapUrl::where('sitemap_id', $sitemap->id)->delete();
 
 
             // Call a method to recursively fetch all URLs from the sitemap
