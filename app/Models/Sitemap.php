@@ -15,4 +15,14 @@ class Sitemap extends Model
         'is_index',
         'parent_id',
     ];
+
+    public function queuedUrls()
+    {
+        return $this->hasMany(QueuedUrl::class);
+    }
+
+    public function sitemapUrls()
+    {
+        return $this->hasMany(SitemapUrl::class);
+    }
 }

@@ -11,8 +11,6 @@ use App\Models\Sitemap;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 
-
-
 class GoogleAuthController extends Controller
 {
     protected $client;
@@ -38,14 +36,13 @@ class GoogleAuthController extends Controller
     public function googleConnectorProfilePage(Request $request): View
     {
         $user = $request->user();
-        $sitemaps = $user->sitemaps()->whereNull('parent_id')->get();
+        $sitemaps = $user->sitemaps()->get();
 
         return view('profile.google', [
             'user' => $user,
             'sitemaps' => $sitemaps,
         ]);
     }
-
 
     public function handleGoogleCallback(Request $request)
     {
@@ -64,15 +61,24 @@ class GoogleAuthController extends Controller
         return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console.');
     }
 
+
     public function disconnect(Request $request)
     {
         $user = Auth::user();
+
+        // Disconnect GSC
         $user->google_token = null;
         $user->google_refresh_token = null;
         $user->save();
 
+        // Check if sitemaps should be deleted
+        if ($request->input('delete_sitemaps') == '1') {
+            Sitemap::where('user_id', $user->id)->delete();
+        }
+
         return redirect()->route('gsc')->with('success', 'Google Search Console disconnected successfully!');
     }
+
 
     public function syncSitemaps()
     {
@@ -96,12 +102,12 @@ class GoogleAuthController extends Controller
 
             foreach ($sitemaps->getSitemap() as $sitemap) {
                 $type = strtolower($sitemap->getType());
+
                 $url = $sitemap->getPath();
 
-                //   Log::info('Sitemap URL: ' . $url . ' | Type: ' . $type);
 
                 // Store the sitemap
-                $storedSitemap = Sitemap::updateOrCreate(
+                Sitemap::updateOrCreate(
                     [
                         'user_id' => $user->id,
                         'url' => $url,
@@ -110,46 +116,12 @@ class GoogleAuthController extends Controller
                         'is_index' => $type === '',
                     ]
                 );
-
-                //  Log::info('Stored Sitemap ID: ' . $storedSitemap->id . ' | URL: ' . $storedSitemap->url . ' | is_index: ' . $storedSitemap->is_index);
-
-                // If the sitemap is an index, store its child sitemaps
-                if ($type === '') {
-                    $this->storeChildSitemaps($url, $storedSitemap->id);
-                }
             }
         }
 
         return redirect()->route('gsc')->with('success', 'Sitemaps Synced!');
     }
 
-    protected function storeChildSitemaps($indexSitemapURL, $parentId)
-    {
-        // Log::info('Fetching child sitemaps for parent ID: ' . $parentId . ' | Index URL: ' . $indexSitemapURL);
-
-        $client = new Client();
-        $response = $client->get($indexSitemapURL);
-        $body = (string) $response->getBody();
-        $xml = simplexml_load_string($body);
-
-        foreach ($xml->sitemap as $childSitemap) {
-            $url = (string) $childSitemap->loc;
-            //  Log::info('Child Sitemap URL: ' . $url . ' | Parent ID: ' . $parentId);
-
-            $storedChildSitemap = Sitemap::updateOrCreate(
-                [
-                    'user_id' => Auth::id(),
-                    'url' => $url,
-                ],
-                [
-                    'is_index' => false,
-                    'parent_id' => $parentId,
-                ]
-            );
-
-            //  Log::info('Stored Child Sitemap ID: ' . $storedChildSitemap->id . ' | URL: ' . $storedChildSitemap->url . ' | Parent ID: ' . $storedChildSitemap->parent_id);
-        }
-    }
 
     public function resyncSitemaps()
     {

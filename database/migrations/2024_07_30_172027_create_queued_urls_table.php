@@ -11,13 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sitemaps', function (Blueprint $table) {
+        Schema::create('queued_urls', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('sitemap_id');
             $table->string('url');
-            $table->boolean('is_index');
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            // Foreign key constraint
+            $table->foreign('sitemap_id')
+                ->references('id')
+                ->on('sitemaps')
+                ->onDelete('cascade'); // Cascade delete
+
+            // Indexes
+            $table->index('url');
         });
     }
 
@@ -26,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sitemaps');
+        Schema::dropIfExists('queued_urls');
     }
 };
