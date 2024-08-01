@@ -25,4 +25,15 @@ class UrlsController extends Controller
 
         return view('dashboard', compact('domains'));
     }
+
+    public function getUrlsByDomain(Request $request)
+    {
+        $domain = $request->query('domain');
+
+        // Fetch URLs based on the selected domain
+        $urls = SitemapUrl::where('page_url', 'like', "%{$domain}%")
+            ->paginate(12); // Assuming pagination with 12 items per page
+
+        return response()->json(['urls' => $urls]);
+    }
 }

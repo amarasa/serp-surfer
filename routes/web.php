@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
 
     //-- Sitemap Controlls
     Route::post('sitemaps/{sitemap}/queue', [QueueController::class, 'queueSitemap'])->name('sitemap.queue');
+    Route::get('/fetch-urls', [UrlsController::class, 'getUrlsByDomain']);
 
     //-- Navigational pages
     Route::get('/dashboard', [UrlsController::class, 'getDomains'])->name('dashboard');
