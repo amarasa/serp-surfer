@@ -196,24 +196,6 @@
                 .catch(error => console.error('Error fetching URLs:', error));
         }
 
-        document.addEventListener('click', function(event) {
-            const paginationLink = event.target.closest('.pagination-info a');
-            if (paginationLink) {
-                event.preventDefault();
-                fetch(paginationLink.href, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        updateUrlTable(data.urls); // Function to update the table with new data
-                        updatePagination(data.pagination); // Function to update the pagination links
-                    })
-                    .catch(error => console.error('Error fetching page:', error));
-            }
-        });
-
 
         function updatePagination(pagination) {
             const paginationInfo = document.querySelector('.pagination-info');
