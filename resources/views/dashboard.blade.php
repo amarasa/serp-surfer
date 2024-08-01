@@ -187,7 +187,11 @@
                 .then(data => {
                     // Update the table with the fetched URLs
                     updateUrlTable(data.urls);
-                    updatePagination(data.pagination); // Update pagination information
+                    if (data.pagination) {
+                        updatePagination(data.pagination);
+                    } else {
+                        console.error('No pagination data available');
+                    }
                 })
                 .catch(error => console.error('Error fetching URLs:', error));
         }
@@ -230,7 +234,7 @@
                     }
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    ${url.last_scanned}
+                    ${url.updated_at ? timeAgo(new Date(url.updated_at)) : 'No Data'}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <a href="https://google.com/search?q=site:${url.page_url}" target="_blank" class="inline-block text-blue-600 hover:text-blue-800">
@@ -246,4 +250,20 @@
             });
         }
     });
+
+    function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+
+        if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 2592000);
+        if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+        return Math.floor(seconds) + " second" + (seconds > 1 ? "s" : "") + " ago";
+    }
 </script>
