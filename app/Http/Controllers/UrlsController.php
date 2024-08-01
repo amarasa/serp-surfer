@@ -23,17 +23,17 @@ class UrlsController extends Controller
             ->values()
             ->all();
 
-        return view('dashboard', compact('domains'));
+        // Default to the first domain's URLs if available
+        $defaultDomain = $domains[0] ?? null;
+        $urls = $defaultDomain ? SitemapUrl::where('page_url', 'like', "%{$defaultDomain}%")->paginate(12) : [];
+
+        return view('dashboard', compact('domains', 'urls'));
     }
 
     public function getUrlsByDomain(Request $request)
     {
         $domain = $request->query('domain');
-
-        // Fetch URLs based on the selected domain
-        $urls = SitemapUrl::where('page_url', 'like', "%{$domain}%")
-            ->paginate(12); // Assuming pagination with 12 items per page
-
+        $urls = SitemapUrl::where('page_url', 'like', "%{$domain}%")->paginate(12);
         return response()->json(['urls' => $urls]);
     }
 }
