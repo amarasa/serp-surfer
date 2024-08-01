@@ -122,6 +122,7 @@
 
         dropdownButton.addEventListener('click', function() {
             dropdownMenu.classList.toggle('hidden');
+            console.log(dropdownMenu.classList);
         });
 
         items.forEach(item => {
