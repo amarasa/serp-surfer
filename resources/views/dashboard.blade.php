@@ -41,7 +41,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
+                        <thead>
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     <input type="checkbox" id="select-all">
@@ -151,6 +151,14 @@
 
         dropdownButton.addEventListener('click', function() {
             dropdownMenu.classList.toggle('hidden');
+        });
+
+        document.getElementById('select-all').addEventListener('change', function(event) {
+            const isChecked = event.target.checked;
+            const checkboxes = document.querySelectorAll('.select-row');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
         });
 
         items.forEach(item => {
