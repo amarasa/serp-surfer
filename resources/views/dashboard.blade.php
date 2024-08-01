@@ -187,9 +187,22 @@
                 .then(data => {
                     // Update the table with the fetched URLs
                     updateUrlTable(data.urls);
+                    updatePagination(data.pagination); // Update pagination information
                 })
                 .catch(error => console.error('Error fetching URLs:', error));
         }
+
+        function updatePagination(pagination) {
+            const paginationInfo = document.querySelector('.pagination-info');
+            paginationInfo.innerHTML = pagination;
+        }
+
+
+        function updatePagination(pagination) {
+            const paginationInfo = document.querySelector('.pagination-info');
+            paginationInfo.innerHTML = pagination;
+        }
+
 
         function updateUrlTable(urls) {
             const tbody = document.querySelector('tbody');
