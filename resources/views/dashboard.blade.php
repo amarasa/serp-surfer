@@ -10,7 +10,6 @@
             <div class="relative">
                 <button id="dropdown-button" class="w-full text-left bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm pl-3 pr-10 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <span id="selected-item" class="block truncate">Select Domain</span>
-
                     <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -34,8 +33,6 @@
             </div>
         </div>
     </div>
-
-
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -68,28 +65,20 @@
                                 </td>
                             </tr>
                         </tbody>
-
                     </table>
                     <div class="pagination-info mt-4">
                         @if ($urls instanceof \Illuminate\Pagination\AbstractPaginator)
                         {{ $urls->links() }}
                         @endif
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-
-
 </x-app-layout>
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-
         const dropdownButton = document.getElementById("dropdown-button");
         const dropdownMenu = document.getElementById("dropdown-menu");
         const selectedItem = document.getElementById("selected-item");
@@ -105,9 +94,7 @@
                 const selectedText = item.querySelector(".block").innerText;
                 selectedItem.innerText = selectedText;
 
-                items.forEach((i) =>
-                    i.querySelector("span + span").classList.add("hidden")
-                );
+                items.forEach((i) => i.querySelector("span + span").classList.add("hidden"));
                 item.querySelector("span + span").classList.remove("hidden");
 
                 dropdownMenu.classList.add("hidden");
@@ -120,10 +107,7 @@
 
         // Hide dropdown when clicking outside of it
         document.addEventListener("click", function(event) {
-            if (
-                !dropdownButton.contains(event.target) &&
-                !dropdownMenu.contains(event.target)
-            ) {
+            if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
                 dropdownMenu.classList.add("hidden");
             }
         });
@@ -149,7 +133,6 @@
             });
             document.querySelector('tbody').innerHTML = rendered;
         }
-
 
         function updatePagination(pagination) {
             const paginationInfo = document.querySelector('.pagination-info');
@@ -194,25 +177,19 @@
         const seconds = Math.floor((new Date() - date) / 1000);
         let interval = Math.floor(seconds / 31536000);
 
-        if (interval >= 1)
-            return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+        if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
         interval = Math.floor(seconds / 2592000);
-        if (interval >= 1)
-            return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+        if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
         interval = Math.floor(seconds / 86400);
-        if (interval >= 1)
-            return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+        if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
         interval = Math.floor(seconds / 3600);
-        if (interval >= 1)
-            return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+        if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
         interval = Math.floor(seconds / 60);
-        if (interval >= 1)
-            return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+        if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
         return Math.floor(seconds) + " second" + (seconds > 1 ? "s" : "") + " ago";
     }
 </script>
 
-<!-- Add this script block within the <x-app-layout> component or at the end of your Blade file -->
 <script id="url-template" type="x-tmpl-mustache">
     {{#urls}}
         <tr>
@@ -226,17 +203,17 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm">
                 {{#index_status}}
                     <svg class="w-6 h-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                        <path fill='#157f1f' d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z" />
+                        <path fill="#157f1f" d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z" />
                     </svg>
                 {{/index_status}}
                 {{^index_status}}
                     <svg class="w-6 h-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                        <path fill='#EC0B43' d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" />
+                        <path fill="#EC0B43" d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" />
                     </svg>
                 {{/index_status}}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                {{#updated_at}} {{timeAgo updated_at}} {{/updated_at}}
+                {{updated_at}}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <a href="https://google.com/search?q=site:{{page_url}}" target="_blank" class="inline-block text-blue-600 hover:text-blue-800">
