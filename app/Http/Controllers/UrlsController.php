@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SitemapUrl;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UrlsController extends Controller
 {
@@ -25,7 +26,8 @@ class UrlsController extends Controller
 
         // Default to the first domain's URLs if available
         $defaultDomain = $domains[0] ?? null;
-        $urls = collect(); // No data initially
+        $urls = new LengthAwarePaginator([], 0, 12); // Empty paginator
+
 
         return view('dashboard', compact('domains', 'urls'));
     }

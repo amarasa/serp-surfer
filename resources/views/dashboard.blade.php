@@ -71,7 +71,10 @@
 
                     </table>
                     <div class="pagination-info mt-4">
+                        @if ($urls instanceof \Illuminate\Pagination\AbstractPaginator)
                         {{ $urls->links() }}
+                        @endif
+
                     </div>
                 </div>
             </div>
