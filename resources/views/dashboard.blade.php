@@ -79,12 +79,13 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Ensure proper function and variable declaration
         const dropdownButton = document.getElementById("dropdown-button");
         const dropdownMenu = document.getElementById("dropdown-menu");
         const selectedItem = document.getElementById("selected-item");
         const items = dropdownMenu.querySelectorAll("li");
 
-        // Toggle dropdown visibility when the button is clicked
+        // Ensure proper event listener registration
         dropdownButton.addEventListener("click", function() {
             dropdownMenu.classList.toggle("hidden");
         });
@@ -94,6 +95,7 @@
                 const selectedText = item.querySelector(".block").innerText;
                 selectedItem.innerText = selectedText;
 
+                // Ensure no extraneous semicolons
                 items.forEach((i) => i.querySelector("span + span").classList.add("hidden"));
                 item.querySelector("span + span").classList.remove("hidden");
 
@@ -105,7 +107,7 @@
             });
         });
 
-        // Hide dropdown when clicking outside of it
+        // Ensure proper closure of event listener registrations and functions
         document.addEventListener("click", function(event) {
             if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
                 dropdownMenu.classList.add("hidden");
@@ -138,38 +140,29 @@
             const paginationInfo = document.querySelector('.pagination-info');
             paginationInfo.innerHTML = pagination;
 
-            // Rebind pagination links for the newly loaded data
             bindPaginationLinks();
         }
 
         function bindPaginationLinks() {
-            // Select all pagination links
             document.querySelectorAll('.pagination a').forEach(link => {
-                // Add a click event listener to each pagination link
                 link.addEventListener('click', function(event) {
-                    event.preventDefault(); // Prevent the default link behavior
-
-                    const url = this.href; // Get the URL from the link
-
-                    // Make an AJAX request to fetch the paginated data
+                    event.preventDefault();
+                    const url = this.href;
                     fetch(url, {
                             headers: {
-                                'X-Requested-With': 'XMLHttpRequest' // Set the AJAX header
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
-                        .then(response => response.json()) // Parse the response as JSON
+                        .then(response => response.json())
                         .then(data => {
-                            // Update the table with new URLs
                             updateUrlTable(data.urls);
-                            // Update the pagination links
                             updatePagination(data.pagination);
                         })
-                        .catch(error => console.error('Error fetching paginated URLs:', error)); // Handle any errors
+                        .catch(error => console.error('Error fetching paginated URLs:', error));
                 });
             });
         }
 
-        // Initial call to bind pagination links
         bindPaginationLinks();
     });
 
@@ -189,6 +182,7 @@
         return Math.floor(seconds) + " second" + (seconds > 1 ? "s" : "") + " ago";
     }
 </script>
+
 
 <script id="url-template" type="x-tmpl-mustache">
     {{#urls}}
