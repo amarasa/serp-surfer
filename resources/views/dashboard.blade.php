@@ -178,7 +178,28 @@
         function updatePagination(pagination) {
             const paginationInfo = document.querySelector('.pagination-info');
             paginationInfo.innerHTML = pagination;
+
+            // Add event listeners to pagination links
+            document.querySelectorAll('.pagination a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.href;
+
+                    fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            updateUrlTable(data.urls);
+                            updatePagination(data.pagination);
+                        })
+                        .catch(error => console.error('Error fetching paginated URLs:', error));
+                });
+            });
         }
+
 
 
         function updatePagination(pagination) {
