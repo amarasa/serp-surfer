@@ -25,7 +25,7 @@ class UrlsController extends Controller
 
         // Default to the first domain's URLs if available
         $defaultDomain = $domains[0] ?? null;
-        $urls = $defaultDomain ? SitemapUrl::where('page_url', 'like', "%{$defaultDomain}%")->paginate(12) : [];
+        $urls = collect(); // No data initially
 
         return view('dashboard', compact('domains', 'urls'));
     }
