@@ -89,36 +89,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const dropdownButton = document.getElementById('dropdown-button');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        const selectedItem = document.getElementById('selected-item');
-        const items = dropdownMenu.querySelectorAll('li');
-
-        dropdownButton.addEventListener('click', function() {
-            dropdownMenu.classList.toggle('hidden');
-        });
-
-        items.forEach(item => {
-            item.addEventListener('click', function() {
-                const selectedText = item.querySelector('.block').innerText;
-                selectedItem.innerText = selectedText;
-
-                items.forEach(i => i.querySelector('span + span').classList.add('hidden'));
-                item.querySelector('span + span').classList.remove('hidden');
-
-                dropdownMenu.classList.add('hidden');
-
-                if (selectedText !== 'Select Domain') {
-                    fetchUrlsForDomain(selectedText);
-                }
-            });
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.classList.add('hidden');
-            }
-        });
+        // Existing code...
 
         function fetchUrlsForDomain(domain) {
             fetch(`/fetch-urls?domain=${encodeURIComponent(domain)}`, {
@@ -182,8 +153,8 @@
                     <a href="${url.page_url}" target="_blank" class="inline-block ml-2 text-blue-600 hover:text-blue-800">
                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                             <path d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6l0-128c0-17.7-14.3-32-32-32L352 0zM80 32C35.8 32 0 67.8 0 112L0 432c0 44.2 35.8 80 80 80l320 0c44.2 0 80-35.8 80-80l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 112c0 8.8-7.2 16-16 16L80 448c-8.8 0-16-7.2-16-16l0-320c0-8.8 7.2-16 16-16l112 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 32z"/>
-                        </svg>
-                    </a>
+                    </svg>
+                </a>
                 </td>
             `;
                 tbody.appendChild(row);
@@ -197,49 +168,37 @@
             // Rebind pagination links for the newly loaded data
             bindPaginationLinks();
         }
-    });
 
-    function bindPaginationLinks() {
-        // Select all pagination links
-        document.querySelectorAll('.pagination a').forEach(link => {
-            // Add a click event listener to each pagination link
-            link.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent the default link behavior
+        function bindPaginationLinks() {
+            // Select all pagination links
+            document.querySelectorAll('.pagination a').forEach(link => {
+                // Add a click event listener to each pagination link
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent the default link behavior
 
-                const url = this.href; // Get the URL from the link
+                    const url = this.href; // Get the URL from the link
 
-                // Make an AJAX request to fetch the paginated data
-                fetch(url, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest' // Set the AJAX header
-                        }
-                    })
-                    .then(response => response.json()) // Parse the response as JSON
-                    .then(data => {
-                        // Update the table with new URLs
-                        updateUrlTable(data.urls);
-                        // Update the pagination links
-                        updatePagination(data.pagination);
-                    })
-                    .catch(error => console.error('Error fetching paginated URLs:', error)); // Handle any errors
+                    // Make an AJAX request to fetch the paginated data
+                    fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest' // Set the AJAX header
+                            }
+                        })
+                        .then(response => response.json()) // Parse the response as JSON
+                        .then(data => {
+                            // Update the table with new URLs
+                            updateUrlTable(data.urls);
+                            // Update the pagination links
+                            updatePagination(data.pagination);
+                        })
+                        .catch(error => console.error('Error fetching paginated URLs:', error)); // Handle any errors
+                });
             });
-        });
-    }
+        }
 
-
-    function fetchPaginatedData(url) {
-        fetch(url, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                updateUrlTable(data.urls);
-                updatePagination(data.pagination);
-            })
-            .catch(error => console.error('Error fetching paginated URLs:', error));
-    }
+        // Initial call to bind pagination links
+        bindPaginationLinks();
+    });
 
     function timeAgo(date) {
         const seconds = Math.floor((new Date() - date) / 1000);

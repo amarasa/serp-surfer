@@ -40,15 +40,10 @@ class UrlsController extends Controller
         $urls = SitemapUrl::where('page_url', 'like', "%{$domain}%")
             ->paginate(12); // Assuming pagination with 12 items per page
 
-        // Check if the request expects JSON (typically for AJAX)
-        if ($request->ajax()) {
-            return response()->json([
-                'urls' => $urls->items(),
-                'pagination' => (string) $urls->links() // Ensure this returns HTML
-            ]);
-        }
-
-        // For non-AJAX requests, return the full view
-        return view('dashboard', compact('urls', 'domain'));
+        // Return the URLs and pagination information
+        return response()->json([
+            'urls' => $urls->items(),
+            'pagination' => $urls->appends(['domain' => $domain])->links()->render(), // Append domain to keep filter during pagination
+        ]);
     }
 }
