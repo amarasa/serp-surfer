@@ -194,43 +194,67 @@
             const paginationInfo = document.querySelector('.pagination-info');
             paginationInfo.innerHTML = pagination;
 
-            // Rebind pagination links
-            document.querySelectorAll('.pagination a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    fetchPaginatedData(this.href);
-                });
+            // Rebind pagination links for the newly loaded data
+            bindPaginationLinks();
+        }
+    });
+
+    function bindPaginationLinks() {
+        // Select all pagination links
+        document.querySelectorAll('.pagination a').forEach(link => {
+            // Add a click event listener to each pagination link
+            link.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default link behavior
+
+                const url = this.href; // Get the URL from the link
+
+                // Make an AJAX request to fetch the paginated data
+                fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest' // Set the AJAX header
+                        }
+                    })
+                    .then(response => response.json()) // Parse the response as JSON
+                    .then(data => {
+                        // Update the table with new URLs
+                        updateUrlTable(data.urls);
+                        // Update the pagination links
+                        updatePagination(data.pagination);
+                    })
+                    .catch(error => console.error('Error fetching paginated URLs:', error)); // Handle any errors
             });
-        }
+        });
+    }
 
-        function fetchPaginatedData(url) {
-            fetch(url, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    updateUrlTable(data.urls);
-                    updatePagination(data.pagination);
-                })
-                .catch(error => console.error('Error fetching paginated URLs:', error));
-        }
 
-        function timeAgo(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
-            let interval = Math.floor(seconds / 31536000);
+    function fetchPaginatedData(url) {
+        fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateUrlTable(data.urls);
+                updatePagination(data.pagination);
+            })
+            .catch(error => console.error('Error fetching paginated URLs:', error));
+    }
 
-            if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
-            interval = Math.floor(seconds / 2592000);
-            if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
-            interval = Math.floor(seconds / 86400);
-            if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
-            interval = Math.floor(seconds / 3600);
-            if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
-            interval = Math.floor(seconds / 60);
-            if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
-            return Math.floor(seconds) + " second" + (seconds > 1 ? "s" : "") + " ago";
-        }
+    function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+
+        if (interval >= 1) return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 2592000);
+        if (interval >= 1) return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1) return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+        return Math.floor(seconds) + " second" + (seconds > 1 ? "s" : "") + " ago";
+    }
     });
 </script>
