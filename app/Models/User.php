@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -36,9 +37,9 @@ class User extends Authenticatable
         'google_refresh_token',
     ];
 
-    public function sitemaps()
+    public function sitemaps(): BelongsToMany
     {
-        return $this->hasMany(Sitemap::class);
+        return $this->belongsToMany(Sitemap::class)->withTimestamps();
     }
 
     /**

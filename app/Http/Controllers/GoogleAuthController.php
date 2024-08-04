@@ -36,7 +36,7 @@ class GoogleAuthController extends Controller
     public function googleConnectorProfilePage(Request $request): View
     {
         $user = $request->user();
-        $sitemaps = $user->sitemaps()->get();
+        $sitemaps = $user->sitemaps; // Changed to fetch sitemaps via relationship
 
         return view('profile.google', [
             'user' => $user,
@@ -71,9 +71,9 @@ class GoogleAuthController extends Controller
         $user->google_refresh_token = null;
         $user->save();
 
-        // Check if sitemaps should be deleted
+        // Detach all associated sitemaps
         if ($request->input('delete_sitemaps') == '1') {
-            Sitemap::where('user_id', $user->id)->delete();
+            $user->sitemaps()->detach(); // Detach instead of delete
         }
 
         return redirect()->route('gsc')->with('success', 'Google Search Console disconnected successfully!');
@@ -102,26 +102,24 @@ class GoogleAuthController extends Controller
 
             foreach ($sitemaps->getSitemap() as $sitemap) {
                 $type = strtolower($sitemap->getType());
-
                 $url = $sitemap->getPath();
 
-
-                // Store the sitemap
-                Sitemap::updateOrCreate(
+                // Find or create the sitemap, then attach it to the user
+                $sitemapModel = Sitemap::firstOrCreate(
                     [
-                        'user_id' => $user->id,
                         'url' => $url,
                     ],
                     [
-                        'is_index' => $type === '',
+                        'is_index' => $type === 'index',
                     ]
                 );
+
+                $user->sitemaps()->syncWithoutDetaching($sitemapModel->id);
             }
         }
 
         return redirect()->route('gsc')->with('success', 'Sitemaps Synced!');
     }
-
 
     public function resyncSitemaps()
     {

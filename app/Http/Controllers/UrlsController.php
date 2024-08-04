@@ -11,9 +11,10 @@ class UrlsController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $domains = SitemapUrl::whereHas('sitemap', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
+
+        // Fetch domains by filtering sitemaps associated with the user
+        $sitemaps = $user->sitemaps;
+        $domains = SitemapUrl::whereIn('sitemap_id', $sitemaps->pluck('id'))
             ->distinct()
             ->get()
             ->map(function ($url) {
@@ -28,6 +29,7 @@ class UrlsController extends Controller
         $urls = collect();
         if ($selectedDomain) {
             $urls = SitemapUrl::where('page_url', 'like', "%{$selectedDomain}%")
+                ->whereIn('sitemap_id', $sitemaps->pluck('id'))
                 ->paginate(12);
         }
 

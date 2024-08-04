@@ -12,6 +12,8 @@ class QueueController extends Controller
 {
     public function queueSitemap(Sitemap $sitemap)
     {
+        Log::info('queueSitemap method called for sitemap ID: ' . $sitemap->id);
+
         try {
             // Start a transaction to ensure atomicity
             \DB::beginTransaction();
@@ -86,17 +88,41 @@ class QueueController extends Controller
             // Load and parse the XML sitemap
             $xml = simplexml_load_file($sitemapUrl);
 
-            if ($xml !== false && isset($xml->url)) {
-                foreach ($xml->url as $urlElement) {
-                    $urls[] = (string)$urlElement->loc;
+            if ($xml !== false) {
+                // Check if it's an index sitemap
+                if (isset($xml->sitemap)) {
+                    foreach ($xml->sitemap as $sitemapElement) {
+                        $nestedSitemapUrl = (string)$sitemapElement->loc;
+                        // Recursively parse nested sitemaps
+                        $urls = array_merge($urls, $this->parseSitemap($nestedSitemapUrl));
+                    }
+                } elseif (isset($xml->url)) {
+                    // Regular sitemap with URLs
+                    foreach ($xml->url as $urlElement) {
+                        $urls[] = (string)$urlElement->loc;
+                    }
+                } else {
+                    \Log::error("Error parsing sitemap: No URL or Sitemap elements found or failed to load XML for URL: {$sitemapUrl}");
                 }
             } else {
-                \Log::error("Error parsing sitemap: No URL elements found or failed to load XML for URL: {$sitemapUrl}");
+                \Log::error("Error parsing sitemap: Failed to load XML for URL: {$sitemapUrl}");
             }
         } catch (\Exception $e) {
             \Log::error("Error parsing sitemap: {$e->getMessage()} for URL: {$sitemapUrl}");
         }
 
         return $urls;
+    }
+
+    public function toggleAutoScan(Request $request, Sitemap $sitemap)
+    {
+        $validated = $request->validate([
+            'auto_scan' => 'required|boolean',
+        ]);
+
+        $sitemap->auto_scan = $validated['auto_scan'];
+        $sitemap->save();
+
+        return response()->json(['success' => true, 'auto_scan' => $sitemap->auto_scan]);
     }
 }
