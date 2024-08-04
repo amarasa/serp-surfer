@@ -24,8 +24,11 @@
                 </div>
                 <div id="dropdown-menu" class="absolute mt-1 w-full rounded-md bg-white dark:bg-gray-800 shadow-lg z-10 hidden">
                     <ul class="max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm">
+                        <li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-100 hover:bg-indigo-600 hover:text-white" data-domain="">
+                            <span class="font-normal block truncate ml-6">Select Domain</span>
+                        </li>
                         @foreach($domains as $domain)
-                        <li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-100 hover:bg-indigo-600 hover:text-white">
+                        <li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-100 hover:bg-indigo-600 hover:text-white" data-domain="{{ $domain }}">
                             <span class="font-normal block truncate ml-6">{{ $domain }}</span>
                         </li>
                         @endforeach
@@ -130,8 +133,8 @@
         // Handle selection
         dropdownMenu.querySelectorAll('li').forEach(item => {
             item.addEventListener('click', function() {
-                const domain = item.querySelector('.block').innerText;
-                selectedItem.innerText = domain;
+                const domain = item.getAttribute('data-domain');
+                selectedItem.innerText = domain || 'Select Domain';
                 selectedDomainInput.value = domain;
                 domainForm.submit();
             });
@@ -144,4 +147,24 @@
             }
         });
     });
+
+    function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+        if (interval >= 1)
+            return interval + " year" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 2592000);
+        if (interval >= 1)
+            return interval + " month" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1)
+            return interval + " day" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1)
+            return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1)
+            return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
+        return Math.floor(seconds) + " second" + (seconds > 1 ? "s" : "") + " ago";
+    }
 </script>
