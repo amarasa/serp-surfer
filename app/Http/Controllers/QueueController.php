@@ -113,4 +113,16 @@ class QueueController extends Controller
 
         return $urls;
     }
+
+    public function toggleAutoScan(Request $request, Sitemap $sitemap)
+    {
+        $validated = $request->validate([
+            'auto_scan' => 'required|boolean',
+        ]);
+
+        $sitemap->auto_scan = $validated['auto_scan'];
+        $sitemap->save();
+
+        return response()->json(['success' => true, 'auto_scan' => $sitemap->auto_scan]);
+    }
 }
