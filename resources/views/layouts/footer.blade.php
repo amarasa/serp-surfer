@@ -107,7 +107,7 @@
 
             // Initialize Tippy for elements with the class "tooltip-slow" with a delay before showing
             tippy('.tooltip-slow', {
-                delay: [3000, 0], // 3000ms before showing, 0ms before hiding
+                delay: [2000, 0], // 3000ms before showing, 0ms before hiding
                 theme: 'light-border', // Optional: Use the same theme or specify another
             });
         });
