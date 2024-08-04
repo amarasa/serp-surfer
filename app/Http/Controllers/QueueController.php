@@ -12,6 +12,8 @@ class QueueController extends Controller
 {
     public function queueSitemap(Sitemap $sitemap)
     {
+        Log::info('queueSitemap method called for sitemap ID: ' . $sitemap->id);
+
         try {
             // Start a transaction to ensure atomicity
             \DB::beginTransaction();
