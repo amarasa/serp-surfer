@@ -7,18 +7,31 @@
 
     <div class="pt-8 pb-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="relative inline-block w-1/4">
-            <div class="relative">
-                <form id="domain-form" method="GET" action="{{ route('dashboard') }}">
-                    <select name="domain" id="domain-select" class="w-full text-left bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm pl-3 pr-10 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Select Domain</option>
+            <form id="domain-form" method="GET" action="{{ route('dashboard') }}">
+                <input type="hidden" name="domain" id="selected-domain">
+                <div class="relative">
+                    <button type="button" id="dropdown-button" class="w-full text-left bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm pl-3 pr-10 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <span id="selected-item" class="block truncate">
+                            {{ $selectedDomain ?? 'Select Domain' }}
+                        </span>
+
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+                <div id="dropdown-menu" class="absolute mt-1 w-full rounded-md bg-white dark:bg-gray-800 shadow-lg z-10 hidden">
+                    <ul class="max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm">
                         @foreach($domains as $domain)
-                        <option value="{{ $domain }}" {{ request('domain') == $domain ? 'selected' : '' }}>
-                            {{ $domain }}
-                        </option>
+                        <li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-100 hover:bg-indigo-600 hover:text-white">
+                            <span class="font-normal block truncate ml-6">{{ $domain }}</span>
+                        </li>
                         @endforeach
-                    </select>
-                </form>
-            </div>
+                    </ul>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -47,7 +60,14 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            @forelse($urls as $url)
+                            @if($urls->isEmpty())
+                            <tr>
+                                <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 text-center">
+                                    Please select a domain to view the data.
+                                </td>
+                            </tr>
+                            @else
+                            @foreach($urls as $url)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <input type="checkbox" class="select-row">
@@ -57,9 +77,11 @@
                                     <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ $url->page_url }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    {!! $url->index_status ? '<svg class="w-6 h-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    {!! $url->index_status ?
+                                    '<svg class="w-6 h-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                         <path fill="#157f1f" d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z" />
-                                    </svg>' : '<svg class="w-6 h-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    </svg>' :
+                                    '<svg class="w-6 h-6 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                         <path fill="#EC0B43" d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" />
                                     </svg>' !!}
                                 </td>
@@ -79,13 +101,8 @@
                                     </a>
                                 </td>
                             </tr>
-                            @empty
-                            <tr>
-                                <td colspan="5" class="px-6 py-4 text-center">
-                                    No data available for the selected domain.
-                                </td>
-                            </tr>
-                            @endforelse
+                            @endforeach
+                            @endif
                         </tbody>
                     </table>
                     <div class="pagination-info mt-4">
@@ -95,10 +112,36 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('domain-select').addEventListener('change', function() {
-            document.getElementById('domain-form').submit();
-        });
-    </script>
 </x-app-layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownButton = document.getElementById('dropdown-button');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const selectedItem = document.getElementById('selected-item');
+        const domainForm = document.getElementById('domain-form');
+        const selectedDomainInput = document.getElementById('selected-domain');
+
+        // Toggle dropdown menu
+        dropdownButton.addEventListener('click', function() {
+            dropdownMenu.classList.toggle('hidden');
+        });
+
+        // Handle selection
+        dropdownMenu.querySelectorAll('li').forEach(item => {
+            item.addEventListener('click', function() {
+                const domain = item.querySelector('.block').innerText;
+                selectedItem.innerText = domain;
+                selectedDomainInput.value = domain;
+                domainForm.submit();
+            });
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+    });
+</script>

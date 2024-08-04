@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/fetch-urls', [UrlsController::class, 'getUrlsByDomain']);
 
     //-- Navigational pages
-    Route::get('/dashboard', [UrlsController::class, 'getDomains'])->name('dashboard');
+    Route::get('/dashboard', [UrlsController::class, 'index'])->name('dashboard');
 });
 
 require __DIR__ . '/auth.php';
