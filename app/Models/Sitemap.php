@@ -16,6 +16,7 @@ class Sitemap extends Model
         'url',
         'is_index',
         'parent_id',
+        'auto_scan',
     ];
 
     public function queuedUrls()
