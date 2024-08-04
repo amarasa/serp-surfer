@@ -27,16 +27,15 @@
                         @foreach($domains as $domain)
                         <li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-100 hover:bg-indigo-600 hover:text-white" data-domain="{{ $domain }}">
                             <span class="font-normal block truncate ml-6">{{ $domain }}</span>
-                            @if ($domain === $selectedDomain)
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-2 text-indigo-600">
+                            <span role="checkmark" class="absolute inset-y-0 left-0 flex items-center pl-2 text-indigo-600 {{ $domain !== $selectedDomain ? 'hidden' : '' }}">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor">
                                     <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
                                 </svg>
                             </span>
-                            @endif
                         </li>
                         @endforeach
                     </ul>
+
 
                 </div>
             </form>
@@ -140,21 +139,25 @@
             dropdownMenu.classList.toggle('hidden');
         });
 
+        // Handle selection and checkmark update
         dropdownMenu.querySelectorAll('li').forEach(item => {
             item.addEventListener('click', function() {
                 const domain = item.getAttribute('data-domain');
                 selectedItem.innerText = domain || 'Select Domain';
                 selectedDomainInput.value = domain;
-                domainForm.submit();
-            });
-        });
 
-        // Handle selection
-        dropdownMenu.querySelectorAll('li').forEach(item => {
-            item.addEventListener('click', function() {
-                const domain = item.getAttribute('data-domain');
-                selectedItem.innerText = domain || 'Select Domain';
-                selectedDomainInput.value = domain;
+                // Remove checkmark from all items
+                dropdownMenu.querySelectorAll('li span[role="checkmark"]').forEach(checkmark => {
+                    checkmark.classList.add('hidden');
+                });
+
+                // Add checkmark to the selected item
+                const checkmark = item.querySelector('span[role="checkmark"]');
+                if (checkmark) {
+                    checkmark.classList.remove('hidden');
+                }
+
+                // Submit the form to load the new data
                 domainForm.submit();
             });
         });
@@ -167,30 +170,12 @@
         });
     });
 
-    const selectedItem = document.getElementById('selected-item');
-
+    // Event listener for 'select all' checkbox
     document.getElementById('select-all').addEventListener('change', function(event) {
         const isChecked = event.target.checked;
         const checkboxes = document.querySelectorAll('.select-row');
         checkboxes.forEach(checkbox => {
             checkbox.checked = isChecked;
-        });
-    });
-
-    items.forEach(item => {
-        item.addEventListener('click', function() {
-            const selectedText = item.querySelector('.block').innerText;
-            selectedItem.innerText = selectedText;
-
-            // Hide the dropdown
-            dropdownMenu.classList.add('hidden');
-
-            // Highlight the selected item
-            items.forEach(i => i.querySelector('span + span').classList.add('hidden'));
-            item.querySelector('span + span').classList.remove('hidden');
-
-            // Fetch the data for the selected domain
-            fetchUrlsForDomain(selectedText);
         });
     });
 </script>
