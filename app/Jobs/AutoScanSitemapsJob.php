@@ -3,7 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\Sitemap;
-use App\Models\QueuedUrl;
+use App\Models\SitemapUrl; // Add this import
+use App\Models\QueuedUrl; // Ensure this is imported as well
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
