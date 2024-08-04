@@ -105,9 +105,11 @@
                             @endif
                         </tbody>
                     </table>
+                    @if ($urls instanceof \Illuminate\Pagination\LengthAwarePaginator)
                     <div class="pagination-info mt-4">
                         {{ $urls->links() }}
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -144,6 +146,7 @@
             }
         });
     });
+
 
     function timeAgo(date) {
         const seconds = Math.floor((new Date() - date) / 1000);
