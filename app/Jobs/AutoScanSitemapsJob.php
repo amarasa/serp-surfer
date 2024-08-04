@@ -41,6 +41,14 @@ class AutoScanSitemapsJob implements ShouldQueue
      */
     protected function scanSitemap($sitemapUrl)
     {
+        // Fetch the Sitemap model instance by URL, assuming unique URL per sitemap
+        $sitemap = Sitemap::where('url', $sitemapUrl)->first();
+
+        if (!$sitemap) {
+            Log::error("No matching Sitemap found for URL: {$sitemapUrl}");
+            return;
+        }
+
         $urls = $this->fetchUrlsFromSitemap($sitemapUrl);
 
         foreach ($urls as $url) {
@@ -49,14 +57,18 @@ class AutoScanSitemapsJob implements ShouldQueue
             $existsInSitemap = SitemapUrl::where('page_url', $url)->exists();
 
             if (!$existsInQueued && !$existsInSitemap) {
-                // Add the new URL to the queued_urls table
-                QueuedUrl::create(['url' => $url]);
+                // Add the new URL to the queued_urls table with the associated sitemap_id
+                QueuedUrl::create([
+                    'sitemap_id' => $sitemap->id, // Ensure this is set
+                    'url' => $url
+                ]);
 
                 // Log the new URL added
                 Log::info("New URL added to queue: " . $url);
             }
         }
     }
+
 
     /**
      * Fetch URLs from a sitemap, including handling nested sitemaps.
