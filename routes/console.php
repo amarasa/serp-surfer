@@ -6,4 +6,4 @@ use App\Jobs\ProcessQueuedUrl;
 use App\Jobs\AutoScanSitemapsJob;
 
 Schedule::job(new ProcessQueuedUrl)->everyMinute();
-Schedule::job(new AutoScanSitemapsJob)->everyTenMinutes();
+Schedule::job(new AutoScanSitemapsJob)->everyMinute();
