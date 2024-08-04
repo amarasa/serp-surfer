@@ -120,12 +120,4 @@ class GoogleAuthController extends Controller
 
         return redirect()->route('gsc')->with('success', 'Sitemaps Synced!');
     }
-
-
-    public function resyncSitemaps()
-    {
-        $user = Auth::user();
-        $user->sitemaps()->detach(); // Detach all sitemaps
-        return $this->syncSitemaps();
-    }
 }

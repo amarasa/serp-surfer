@@ -75,17 +75,9 @@
                                     @endphp
                                     @if ($totalUrls > 0)
                                     {{ $processedCount }} of {{ $totalUrls }} URLs Processed
-
-                                    @if ($processedCount < $totalUrls) <span class="loading-spinner-container">Currently Processing
-                                        <svg class="loading-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                            <path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z" />
-                                        </svg>
-                                        </span>
-                                        @endif
-
-                                        @else
-                                        Not yet processed
-                                        @endif
+                                    @else
+                                    Not yet processed
+                                    @endif
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-300">
@@ -100,16 +92,23 @@
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium">
+                                    @if ($totalUrls > 0)
+                                    <!-- Toggle switch for processed sitemaps -->
+                                    <div class="flex justify-center">
+                                        <label class="inline-flex relative items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" checked>
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                    @else
                                     <form method="POST" action="{{ route('sitemap.queue', $sitemap->id) }}">
                                         @csrf
-                                        <button type="submit" class="reprocess-button text-indigo-600 hover:text-indigo-900 focus:outline-none">
-                                            {{ $totalUrls > 0 ? 'Re-process Sitemap' : 'Process Sitemap' }}
+                                        <button type="submit" class="process-button text-indigo-600 hover:text-indigo-900 focus:outline-none">
+                                            Process Sitemap
                                         </button>
                                     </form>
+                                    @endif
                                 </td>
-
-
-
                             </tr>
                             @endforeach
                         </tbody>
@@ -124,27 +123,3 @@
         </header>
     </section>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.reprocess-button').forEach(function(button) {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'Re-syncing will remove all URLs that have already been processed.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, re-sync it!',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        button.closest('form').submit();
-                    }
-                });
-            });
-        });
-    });
-</script>
