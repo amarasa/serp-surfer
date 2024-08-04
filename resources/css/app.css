@@ -44,8 +44,6 @@
     }
 }
 
-
-
 .table-cell-title {
     max-width: 200px; /* Set to a suitable max-width */
     white-space: nowrap;
@@ -56,7 +54,7 @@
 
 .table-cell-title {
     position: relative;
-    max-width: 200px; /* Adjust to your needs */
+    max-width: 550px; /* Adjust to your needs */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -64,7 +62,7 @@
 }
 
 .table-cell-title::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     right: 0;
@@ -73,4 +71,3 @@
     background: linear-gradient(to left, white, transparent);
     pointer-events: none; /* Ensure the gradient doesn't block clicks */
 }
-

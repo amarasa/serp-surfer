@@ -73,7 +73,7 @@
                                     <input type="checkbox" class="select-row">
                                 </td>
                                 <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    <div class="table-cell-title tooltip" data-tippy-content="{{ $url->page_title ?? 'No Title' }}">
+                                    <div class="table-cell-title tooltip-slow" data-tippy-content="{{ $url->page_title ?? 'No Title' }}">
                                         {{ $url->page_title ?? 'No Title' }}
                                     </div>
                                     <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ $url->page_url }}</div>

@@ -100,8 +100,15 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Tippy for elements with the class "tooltip" with a specific theme
             tippy('.tooltip', {
                 theme: 'light-border',
+            });
+
+            // Initialize Tippy for elements with the class "tooltip-slow" with a delay before showing
+            tippy('.tooltip-slow', {
+                delay: [3000, 0], // 3000ms before showing, 0ms before hiding
+                theme: 'light-border', // Optional: Use the same theme or specify another
             });
         });
     </script>
