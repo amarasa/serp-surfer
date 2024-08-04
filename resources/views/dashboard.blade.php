@@ -8,7 +8,7 @@
     <div class="pt-8 pb-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="relative inline-block w-1/4">
             <form id="domain-form" method="GET" action="{{ route('dashboard') }}">
-                <input type="hidden" name="domain" id="selected-domain">
+                <input type="hidden" name="domain" id="selected-domain" value="{{ $selectedDomain }}">
                 <div class="relative">
                     <button type="button" id="dropdown-button" class="w-full text-left bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm pl-3 pr-10 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <span id="selected-item" class="block truncate">
@@ -24,9 +24,6 @@
                 </div>
                 <div id="dropdown-menu" class="absolute mt-1 w-full rounded-md bg-white dark:bg-gray-800 shadow-lg z-10 hidden">
                     <ul class="max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm">
-                        <li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-100 hover:bg-indigo-600 hover:text-white" data-domain="">
-                            <span class="font-normal block truncate ml-6">Select Domain</span>
-                        </li>
                         @foreach($domains as $domain)
                         <li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-gray-900 dark:text-gray-100 hover:bg-indigo-600 hover:text-white" data-domain="{{ $domain }}">
                             <span class="font-normal block truncate ml-6">{{ $domain }}</span>
