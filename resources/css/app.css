@@ -45,3 +45,32 @@
 }
 
 
+
+.table-cell-title {
+    max-width: 200px; /* Set to a suitable max-width */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+}
+
+.table-cell-title {
+    position: relative;
+    max-width: 200px; /* Adjust to your needs */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 20px; /* Space for the gradient */
+}
+
+.table-cell-title::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px; /* Adjust based on gradient */
+    height: 100%;
+    background: linear-gradient(to left, white, transparent);
+    pointer-events: none; /* Ensure the gradient doesn't block clicks */
+}
+

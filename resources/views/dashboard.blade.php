@@ -72,8 +72,10 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <input type="checkbox" class="select-row">
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                    <div>{{ $url->page_title ?? 'No Title' }}</div>
+                                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    <div class="table-cell-title" data-title="{{ $url->page_title ?? 'No Title' }}">
+                                        {{ $url->page_title ?? 'No Title' }}
+                                    </div>
                                     <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ $url->page_url }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -114,6 +116,7 @@
             </div>
         </div>
     </div>
+
 </x-app-layout>
 
 <script>
@@ -147,24 +150,36 @@
         });
     });
 
+    const selectedItem = document.getElementById('selected-item');
 
-    // function timeAgo(date) {
-    //     const seconds = Math.floor((new Date() - date) / 1000);
-    //     let interval = Math.floor(seconds / 31536000);
-    //     if (interval >= 1)
-    //         return interval + " year" + (interval > 1 ? "s" : "") + " ago";
-    //     interval = Math.floor(seconds / 2592000);
-    //     if (interval >= 1)
-    //         return interval + " month" + (interval > 1 ? "s" : "") + " ago";
-    //     interval = Math.floor(seconds / 86400);
-    //     if (interval >= 1)
-    //         return interval + " day" + (interval > 1 ? "s" : "") + " ago";
-    //     interval = Math.floor(seconds / 3600);
-    //     if (interval >= 1)
-    //         return interval + " hour" + (interval > 1 ? "s" : "") + " ago";
-    //     interval = Math.floor(seconds / 60);
-    //     if (interval >= 1)
-    //         return interval + " minute" + (interval > 1 ? "s" : "") + " ago";
-    //     return Math.floor(seconds) + " second" + (seconds > 1 ? "s" : "") + " ago";
-    // }
+    document.getElementById('select-all').addEventListener('change', function(event) {
+        const isChecked = event.target.checked;
+        const checkboxes = document.querySelectorAll('.select-row');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+    });
+
+    items.forEach(item => {
+        item.addEventListener('click', function() {
+            const selectedText = item.querySelector('.block').innerText;
+            selectedItem.innerText = selectedText;
+
+            // Hide the dropdown
+            dropdownMenu.classList.add('hidden');
+
+            // Highlight the selected item
+            items.forEach(i => i.querySelector('span + span').classList.add('hidden'));
+            item.querySelector('span + span').classList.remove('hidden');
+
+            // Fetch the data for the selected domain
+            fetchUrlsForDomain(selectedText);
+        });
+    });
+
+    tippy('.table-cell-title', {
+        content(reference) {
+            return reference.getAttribute('data-title');
+        }
+    });
 </script>
