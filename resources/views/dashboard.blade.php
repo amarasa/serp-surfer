@@ -166,7 +166,10 @@
             </div>
             <div class="flex items-center mt-2">
                 <span class="inline-block w-3 h-3 mr-2 rounded-full blink bg-red-500"></span>
-                <span class="text-sm text-gray-800 dark:text-gray-200">Seen more than 48 hours ago</span>
+                <span class="text-sm text-gray-800 dark:text-gray-200">Seen more than 48 hours ago.</span>
+            </div>
+            <div class="flex items-center mt-2">
+                <span class="text-sm text-gray-800 dark:text-gray-200">Once a URL hasn't been seen in the sitemap in 72 hours, it will be removed from {{ config('app.name') }}</span>
             </div>
         </div>
     </div>
