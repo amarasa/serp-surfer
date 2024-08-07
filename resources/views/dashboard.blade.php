@@ -103,12 +103,20 @@
                                     @php
                                     $lastSeen = \Carbon\Carbon::parse($url->urlList->last_seen);
                                     $now = \Carbon\Carbon::now();
-                                    $hoursDiff = $lastSeen ? $now->diffInHours($lastSeen) : null;
+                                    $hoursDiff = $lastSeen ? $lastSeen->diffInHours($now) : null;
                                     $indicatorClass = '';
 
                                     if ($hoursDiff !== null) {
-                                    if ($hoursDiff <= 24) { $indicatorClass='bg-green-500' ; } elseif ($hoursDiff <=48) { $indicatorClass='bg-yellow-500' ; } else { $indicatorClass='bg-red-500' ; } } @endphp @if ($hoursDiff !==null) <span class="inline-block w-3 h-3 rounded-full blink {{ $indicatorClass }}"></span>
-                                        {{ $lastSeen->diffForHumans() }} / {{$hoursDiff}}
+                                    if ($hoursDiff <= 24) { $indicatorClass='bg-green-500' ; } elseif ($hoursDiff <=48) { $indicatorClass='bg-yellow-500' ; } else { $indicatorClass='bg-red-500' ; } } @endphp <!-- Debugging output -->
+                                        <div style="display:none">
+                                            Last Seen: {{ $lastSeen }}
+                                            Now: {{ $now }}
+                                            Hours Difference: {{ $hoursDiff }}
+                                        </div>
+
+                                        @if ($hoursDiff !== null)
+                                        <span class="inline-block w-3 h-3 rounded-full blink {{ $indicatorClass }}"></span>
+                                        {{ $lastSeen->diffForHumans() }} \ {{ $hoursDiff}}
                                         @else
                                         No Data
                                         @endif
@@ -116,6 +124,7 @@
                                         No Data
                                         @endif
                                 </td>
+
 
 
 
