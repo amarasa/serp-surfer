@@ -3,8 +3,9 @@
 namespace App\Jobs;
 
 use App\Models\Sitemap;
-use App\Models\SitemapUrl; // Add this import
-use App\Models\QueuedUrl; // Ensure this is imported as well
+use App\Models\SitemapUrl;
+use App\Models\QueuedUrl;
+use App\Models\UrlList;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -59,16 +60,28 @@ class AutoScanSitemapsJob implements ShouldQueue
             if (!$existsInQueued && !$existsInSitemap) {
                 // Add the new URL to the queued_urls table with the associated sitemap_id
                 QueuedUrl::create([
-                    'sitemap_id' => $sitemap->id, // Ensure this is set
+                    'sitemap_id' => $sitemap->id,
                     'url' => $url
+                ]);
+
+                // Add the new URL to the url_list table
+                UrlList::create([
+                    'url' => $url,
+                    'status' => 'queued',
+                    'last_seen' => now(),
                 ]);
 
                 // Log the new URL added
                 Log::info("New URL added to queue: " . $url);
+            } else {
+                // Update the last seen timestamp in the url_list table
+                UrlList::updateOrCreate(
+                    ['url' => $url],
+                    ['last_seen' => now()]
+                );
             }
         }
     }
-
 
     /**
      * Fetch URLs from a sitemap, including handling nested sitemaps.

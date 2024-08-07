@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\QueuedUrl;
 use App\Models\SitemapUrl;
+use App\Models\UrlList;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Bus\Queueable;
@@ -74,6 +75,15 @@ class ProcessQueuedUrl implements ShouldQueue
                         'sitemap_id' => $sitemapId,
                         'page_title' => $pageTitle,
                         'index_status' => $isIndexed,
+                    ]
+                );
+
+                // Update the url_list table
+                UrlList::updateOrCreate(
+                    ['url' => $url],
+                    [
+                        'status' => 'scraped',
+                        'last_seen' => now(),
                     ]
                 );
 
