@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UrlList;
 use App\Models\Sitemap;
 use App\Models\SitemapUrl;
 use App\Models\QueuedUrl;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class QueueController extends Controller
 {
+
     public function queueSitemap(Sitemap $sitemap)
     {
         Log::info('queueSitemap method called for sitemap ID: ' . $sitemap->id);
@@ -24,15 +26,25 @@ class QueueController extends Controller
             // Delete all existing processed URLs for the sitemap to avoid duplicates
             SitemapUrl::where('sitemap_id', $sitemap->id)->delete();
 
-
             // Call a method to recursively fetch all URLs from the sitemap
             $urls = $this->fetchAllUrls($sitemap);
 
             // Loop through each URL and add it to the queue
             foreach ($urls as $url) {
+                // Delete matching entries from the url_list table
+                UrlList::where('url', $url)->delete();
+
+                // Add to the queued_urls table
                 QueuedUrl::create([
                     'sitemap_id' => $sitemap->id,
                     'url' => $url,
+                ]);
+
+                // Add to the url_list table with status 'queued'
+                UrlList::create([
+                    'url' => $url,
+                    'status' => 'queued',
+                    'last_seen' => now(),
                 ]);
             }
 

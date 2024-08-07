@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SitemapUrl;
+use App\Models\UrlList; // Import the UrlList model
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -30,6 +31,9 @@ class UrlsController extends Controller
         if ($selectedDomain) {
             $urls = SitemapUrl::where('page_url', 'like', "%{$selectedDomain}%")
                 ->whereIn('sitemap_id', $sitemaps->pluck('id'))
+                ->with(['urlList' => function ($query) {
+                    $query->select('url', 'last_seen'); // Select the relevant columns
+                }])
                 ->paginate(12);
         }
 

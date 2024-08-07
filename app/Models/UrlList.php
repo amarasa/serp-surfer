@@ -20,4 +20,9 @@ class UrlList extends Model
     protected $casts = [
         'last_seen' => 'datetime',
     ];
+
+    public function urlList()
+    {
+        return $this->hasOne(UrlList::class, 'url', 'page_url');
+    }
 }
