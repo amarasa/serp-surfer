@@ -101,14 +101,14 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     @if ($url->urlList)
                                     @php
-                                    $lastSeen = $url->urlList->last_seen;
+                                    $lastSeen = \Carbon\Carbon::parse($url->urlList->last_seen);
                                     $now = \Carbon\Carbon::now();
                                     $hoursDiff = $lastSeen ? $now->diffInHours($lastSeen) : null;
                                     $indicatorClass = '';
 
                                     if ($hoursDiff !== null) {
                                     if ($hoursDiff <= 24) { $indicatorClass='bg-green-500' ; } elseif ($hoursDiff <=48) { $indicatorClass='bg-yellow-500' ; } else { $indicatorClass='bg-red-500' ; } } @endphp @if ($hoursDiff !==null) <span class="inline-block w-3 h-3 rounded-full blink {{ $indicatorClass }}"></span>
-                                        {{ $lastSeen->diffForHumans() }} \ {{$hoursDiff}}
+                                        {{ $lastSeen->diffForHumans() }} / {{$hoursDiff}}
                                         @else
                                         No Data
                                         @endif
@@ -116,6 +116,7 @@
                                         No Data
                                         @endif
                                 </td>
+
 
 
 
