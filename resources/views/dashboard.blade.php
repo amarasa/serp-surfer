@@ -107,7 +107,7 @@
                                     @endphp
 
                                     @if ($hoursDiff !== null)
-                                    <span class="inline-block w-3 h-3 rounded-full @if ($hoursDiff <= 24) bg-green-500 @elseif ($hoursDiff <= 48) bg-yellow-500 @else bg-red-500 @endif"></span>
+                                    <span class="inline-block w-3 h-3 rounded-full blink @if ($hoursDiff <= 24) bg-green-500 @elseif ($hoursDiff <= 48) bg-yellow-500 @else bg-red-500 @endif"></span>
                                     {{ $lastSeen->diffForHumans() }}
                                     @else
                                     No Data
@@ -116,6 +116,7 @@
                                     No Data
                                     @endif
                                 </td>
+
 
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">

@@ -71,3 +71,18 @@
     background: linear-gradient(to left, white, transparent);
     pointer-events: none; /* Ensure the gradient doesn't block clicks */
 }
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.blink {
+    animation: blink 2s infinite;
+}
