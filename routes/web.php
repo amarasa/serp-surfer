@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\UrlsController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,6 +32,13 @@ Route::middleware('auth')->group(function () {
 
     //-- Navigational pages
     Route::get('/dashboard', [UrlsController::class, 'index'])->name('dashboard');
+});
+
+Route::middleware(['role:admin'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin');
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/admin/sitemaps', [AdminController::class, 'sitemaps'])->name('admin.sitemaps');
+    Route::get('/admin/urls', [AdminController::class, 'urls'])->name('admin.urls');
 });
 
 require __DIR__ . '/auth.php';
