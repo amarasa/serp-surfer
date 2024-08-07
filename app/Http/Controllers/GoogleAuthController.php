@@ -124,7 +124,18 @@ class GoogleAuthController extends Controller
     public function resyncSitemaps()
     {
         $user = Auth::user();
-        Sitemap::where('user_id', $user->id)->delete();
+
+        // Get all sitemap IDs associated with the user
+        $sitemapIds = $user->sitemaps()->pluck('sitemap_id');
+
+        // Detach user from sitemaps
+        $user->sitemaps()->detach();
+
+        // Delete sitemaps that are no longer associated with any user
+        Sitemap::whereNotIn('id', function ($query) {
+            $query->select('sitemap_id')
+                ->from('user_sitemap');
+        })->delete();
 
         return $this->syncSitemaps();
     }
