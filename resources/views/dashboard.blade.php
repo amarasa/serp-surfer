@@ -110,8 +110,8 @@
                                     if ($hoursDiff <= 24) { $indicatorClass='bg-green-500' ; } elseif ($hoursDiff <=48) { $indicatorClass='bg-yellow-500' ; } else { $indicatorClass='bg-red-500' ; } } @endphp <!-- Debugging output -->
 
                                         @if ($hoursDiff !== null)
-                                        <span class="inline-block w-3 h-3 rounded-full blink {{ $indicatorClass }}"></span>
-                                        {{ $lastSeen->diffForHumans() }}
+                                        <span class="inline-block tooltip w-3 h-3 rounded-full blink {{ $indicatorClass }}" data-tippy-content="{{ $lastSeen->diffForHumans() }}"></span>
+
                                         @else
                                         No Data
                                         @endif
@@ -169,7 +169,7 @@
                 <span class="text-sm text-gray-800 dark:text-gray-200">Seen more than 48 hours ago.</span>
             </div>
             <div class="flex items-center mt-2">
-                <span class="text-sm text-gray-800 dark:text-gray-200">Once a URL hasn't been seen in the sitemap in 72 hours, it will be removed from {{ config('app.name') }}</span>
+                <span class="text-sm text-gray-800 dark:text-gray-200">Once a URL hasn't been seen in the sitemap in 72 hours, it will be removed from {{ config('app.name') }}.</span>
             </div>
         </div>
     </div>
