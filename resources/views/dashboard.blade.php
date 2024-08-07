@@ -153,21 +153,24 @@
         </div>
 
     </div>
-    <div class="mt-8 text-center container mx-auto">
+    <div class="mt-8 container mx-auto text-center">
         <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200">Legend</h3>
-        <div class="flex items-center mt-2">
-            <span class="inline-block w-3 h-3 mr-2 rounded-full blink bg-green-500"></span>
-            <span class="text-sm text-gray-800 dark:text-gray-200">Seen within the last 24 hours</span>
-        </div>
-        <div class="flex items-center mt-2">
-            <span class="inline-block w-3 h-3 mr-2 rounded-full blink bg-yellow-500"></span>
-            <span class="text-sm text-gray-800 dark:text-gray-200">Seen within the last 24-48 hours</span>
-        </div>
-        <div class="flex items-center mt-2">
-            <span class="inline-block w-3 h-3 mr-2 rounded-full blink bg-red-500"></span>
-            <span class="text-sm text-gray-800 dark:text-gray-200">Seen more than 48 hours ago</span>
+        <div class="flex flex-col items-center mt-2">
+            <div class="flex items-center mt-2">
+                <span class="inline-block w-3 h-3 mr-2 rounded-full blink bg-green-500"></span>
+                <span class="text-sm text-gray-800 dark:text-gray-200">Seen within the last 24 hours</span>
+            </div>
+            <div class="flex items-center mt-2">
+                <span class="inline-block w-3 h-3 mr-2 rounded-full blink bg-yellow-500"></span>
+                <span class="text-sm text-gray-800 dark:text-gray-200">Seen within the last 24-48 hours</span>
+            </div>
+            <div class="flex items-center mt-2">
+                <span class="inline-block w-3 h-3 mr-2 rounded-full blink bg-red-500"></span>
+                <span class="text-sm text-gray-800 dark:text-gray-200">Seen more than 48 hours ago</span>
+            </div>
         </div>
     </div>
+
 
 </x-app-layout>
 
