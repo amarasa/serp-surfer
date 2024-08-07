@@ -104,18 +104,19 @@
                                     $lastSeen = $url->urlList->last_seen;
                                     $now = \Carbon\Carbon::now();
                                     $hoursDiff = $lastSeen ? $now->diffInHours($lastSeen) : null;
-                                    @endphp
+                                    $indicatorClass = '';
 
-                                    @if ($hoursDiff !== null)
-                                    <span class="inline-block w-3 h-3 rounded-full blink @if ($hoursDiff <= 24) bg-green-500 @elseif ($hoursDiff <= 48) bg-yellow-500 @else bg-red-500 @endif"></span>
-                                    {{ $lastSeen->diffForHumans() }}
-                                    @else
-                                    No Data
-                                    @endif
-                                    @else
-                                    No Data
-                                    @endif
+                                    if ($hoursDiff !== null) {
+                                    if ($hoursDiff <= 24) { $indicatorClass='bg-green-500' ; } elseif ($hoursDiff <=48) { $indicatorClass='bg-yellow-500' ; } else { $indicatorClass='bg-red-500' ; } } @endphp @if ($hoursDiff !==null) <span class="inline-block w-3 h-3 rounded-full blink {{ $indicatorClass }}"></span>
+                                        {{ $lastSeen->diffForHumans() }}
+                                        @else
+                                        No Data
+                                        @endif
+                                        @else
+                                        No Data
+                                        @endif
                                 </td>
+
 
 
 
