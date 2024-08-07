@@ -153,7 +153,7 @@
         </div>
 
     </div>
-    <div class="mt-8 container mx-auto text-center">
+    <div class="mt-8 mb-8 container mx-auto text-center">
         <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200">Legend</h3>
         <div class="flex flex-col items-center mt-2">
             <div class="flex items-center mt-2">
