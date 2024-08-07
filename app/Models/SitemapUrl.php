@@ -30,4 +30,9 @@ class SitemapUrl extends Model
     {
         return $this->belongsTo(Sitemap::class);
     }
+
+    public function urlList()
+    {
+        return $this->hasOne(UrlList::class, 'url', 'page_url');
+    }
 }

@@ -117,6 +117,7 @@
                                     @endif
                                 </td>
 
+
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <a href="https://google.com/search?q=site:{{ $url->page_url }}" target="_blank" class="inline-block text-blue-600 hover:text-blue-800">
                                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
