@@ -103,7 +103,7 @@
                                     @php
                                     $lastSeen = \Carbon\Carbon::parse($url->urlList->last_seen);
                                     $now = \Carbon\Carbon::now();
-                                    $hoursDiff = $lastSeen ? $lastSeen->diffInHours($now) : null;
+                                    $hoursDiff = $lastSeen ? floor($lastSeen->diffInHours($now)) : null;
                                     $indicatorClass = '';
 
                                     if ($hoursDiff !== null) {
@@ -116,7 +116,7 @@
 
                                         @if ($hoursDiff !== null)
                                         <span class="inline-block w-3 h-3 rounded-full blink {{ $indicatorClass }}"></span>
-                                        {{ $lastSeen->diffForHumans() }} \ {{ $hoursDiff}}
+                                        {{ $lastSeen->diffForHumans() }}
                                         @else
                                         No Data
                                         @endif
@@ -124,6 +124,7 @@
                                         No Data
                                         @endif
                                 </td>
+
 
 
 
