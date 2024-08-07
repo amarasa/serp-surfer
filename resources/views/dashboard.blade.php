@@ -99,8 +99,24 @@
                                     </svg>' !!}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    {{ $url->updated_at ? $url->updated_at->diffForHumans() : 'No Data' }}
+                                    @if ($url->urlList)
+                                    @php
+                                    $lastSeen = $url->urlList->last_seen;
+                                    $now = \Carbon\Carbon::now();
+                                    $hoursDiff = $lastSeen ? $now->diffInHours($lastSeen) : null;
+                                    @endphp
+
+                                    @if ($hoursDiff !== null)
+                                    <span class="inline-block w-3 h-3 rounded-full @if ($hoursDiff <= 24) bg-green-500 @elseif ($hoursDiff <= 48) bg-yellow-500 @else bg-red-500 @endif"></span>
+                                    {{ $lastSeen->diffForHumans() }}
+                                    @else
+                                    No Data
+                                    @endif
+                                    @else
+                                    No Data
+                                    @endif
                                 </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <a href="https://google.com/search?q=site:{{ $url->page_url }}" target="_blank" class="inline-block text-blue-600 hover:text-blue-800">
                                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
