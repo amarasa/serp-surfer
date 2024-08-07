@@ -134,7 +134,7 @@ class GoogleAuthController extends Controller
         // Delete sitemaps that are no longer associated with any user
         Sitemap::whereNotIn('id', function ($query) {
             $query->select('sitemap_id')
-                ->from('user_sitemap');
+                ->from('sitemap_user');
         })->delete();
 
         return $this->syncSitemaps();
