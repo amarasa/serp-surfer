@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Sitemap;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 
@@ -29,10 +30,11 @@ class AdminController extends Controller
 
     public function sitemaps()
     {
-        $ayoo = 'Sitemap List';
-        // Add your logic here to get the sitemap list
-        return view('admin.index', compact('ayoo'));
+        $sitemaps = Sitemap::with('users')->paginate(12);
+        return view('admin.index', compact('sitemaps'));
     }
+
+
 
     public function urls()
     {
@@ -93,5 +95,25 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Failed to delete user.']);
         }
+    }
+
+    public function toggleAutoScan(Request $request)
+    {
+        $sitemap = Sitemap::find($request->sitemap_id);
+
+        if ($sitemap) {
+            $sitemap->auto_scan = !$sitemap->auto_scan;
+            $sitemap->save();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+    public function searchSitemaps(Request $request)
+    {
+        $query = $request->input('query');
+        $sitemaps = Sitemap::where('url', 'like', "%{$query}%")->with('users')->get();
+        return response()->json($sitemaps);
     }
 }

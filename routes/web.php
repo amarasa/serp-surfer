@@ -44,6 +44,9 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
     Route::post('/admin/users/suspend', [AdminController::class, 'toggleSuspend'])->name('toggle.suspend');
     Route::post('/admin/users/reset-password', [AdminController::class, 'resetPassword'])->name('reset.password');
     Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('delete.user');
+
+    Route::post('/admin/sitemaps/toggle-auto-scan', [AdminController::class, 'toggleAutoScan'])->name('toggle.auto.scan');
+    Route::get('/admin/sitemaps/search', [AdminController::class, 'searchSitemaps'])->name('admin.search.sitemaps');
 });
 
 //-- tests
