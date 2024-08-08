@@ -89,7 +89,8 @@
                                     ${sitemap.users.map(user => user.name).join(', ')}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                    ${sitemap.sitemapUrls.length > 0 
+                                    ${sitemap.sitemapUrls && sitemap.sitemapUrls.length > 0
+
                                         ? `<div class="flex justify-center">
                                                 <label class="inline-flex relative items-center cursor-pointer">
                                                     <input type="checkbox" class="sr-only peer auto-scan-toggle" data-sitemap-id="${sitemap.id}" ${sitemap.auto_scan ? 'checked' : ''}>

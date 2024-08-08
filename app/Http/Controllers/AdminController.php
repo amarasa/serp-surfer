@@ -113,7 +113,10 @@ class AdminController extends Controller
     public function searchSitemaps(Request $request)
     {
         $query = $request->input('query');
-        $sitemaps = Sitemap::where('url', 'like', "%{$query}%")->with('users')->get();
+        $sitemaps = Sitemap::where('url', 'like', "%{$query}%")
+            ->with(['users', 'sitemapUrls']) // Ensure sitemapUrls is included
+            ->get();
+
         return response()->json($sitemaps);
     }
 }
