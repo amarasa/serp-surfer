@@ -110,6 +110,7 @@ class AdminController extends Controller
 
         return response()->json(['success' => false]);
     }
+
     public function searchSitemaps(Request $request)
     {
         $query = $request->input('query');

@@ -117,6 +117,7 @@
 
 
         function toggleAutoScan(sitemapId) {
+            alert('yes');
             axios.post('/admin/sitemaps/toggle-auto-scan', {
                     sitemap_id: sitemapId
                 })
