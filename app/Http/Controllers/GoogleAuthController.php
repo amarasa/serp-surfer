@@ -131,6 +131,9 @@ class GoogleAuthController extends Controller
         // Detach user from sitemaps
         $user->sitemaps()->detach();
 
+        // Delete entries in url_list associated with the detached sitemaps
+        \App\Models\UrlList::whereIn('sitemap_id', $sitemapIds)->delete();
+
         // Delete sitemaps that are no longer associated with any user
         Sitemap::whereNotIn('id', function ($query) {
             $query->select('sitemap_id')

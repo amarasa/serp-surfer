@@ -62,6 +62,16 @@
             const searchInput = document.getElementById('search-input');
             const sitemapTableBody = document.getElementById('sitemap-list-body');
 
+            function attachEventListeners() {
+                const autoScanToggles = document.querySelectorAll('.auto-scan-toggle');
+                autoScanToggles.forEach(toggle => {
+                    toggle.addEventListener('change', function() {
+                        const sitemapId = this.getAttribute('data-sitemap-id');
+                        toggleAutoScan(sitemapId);
+                    });
+                });
+            }
+
             searchInput.addEventListener('input', function() {
                 const filter = searchInput.value;
 
@@ -89,7 +99,7 @@
                                     ${sitemap.users.map(user => user.name).join(', ')}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                    ${sitemap.sitemapUrls.length > 0 
+                                    ${sitemap.sitemapUrls && sitemap.sitemapUrls.length > 0
                                         ? `<div class="flex justify-center">
                                                 <label class="inline-flex relative items-center cursor-pointer">
                                                     <input type="checkbox" class="sr-only peer auto-scan-toggle" data-sitemap-id="${sitemap.id}" ${sitemap.auto_scan ? 'checked' : ''}>
@@ -107,13 +117,18 @@
 
                             sitemapTableBody.appendChild(sitemapRow);
                         });
+
+                        // Attach event listeners to the new checkboxes
+                        attachEventListeners();
                     })
                     .catch(error => {
                         console.error('Error fetching sitemaps:', error);
                     });
             });
-        });
 
+            // Attach event listeners to the initial checkboxes
+            attachEventListeners();
+        });
 
         function toggleAutoScan(sitemapId) {
             axios.post('/admin/sitemaps/toggle-auto-scan', {

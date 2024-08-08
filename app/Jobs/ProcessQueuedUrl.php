@@ -82,6 +82,7 @@ class ProcessQueuedUrl implements ShouldQueue
                 UrlList::updateOrCreate(
                     ['url' => $url],
                     [
+                        'sitemap_id' => $sitemapId,
                         'status' => 'scraped',
                         'last_seen' => now(),
                     ]

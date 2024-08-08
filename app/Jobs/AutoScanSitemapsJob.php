@@ -17,32 +17,18 @@ class AutoScanSitemapsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
-        // Fetch all sitemaps with auto_scan enabled
         $sitemaps = Sitemap::where('auto_scan', true)->get();
 
         foreach ($sitemaps as $sitemap) {
             Log::info("Scanning sitemap: " . $sitemap->url);
-
             $this->scanSitemap($sitemap->url);
         }
     }
 
-    /**
-     * Scan a sitemap and add new URLs to the queued_urls table.
-     *
-     * @param string $sitemapUrl
-     * @return void
-     */
     protected function scanSitemap($sitemapUrl)
     {
-        // Fetch the Sitemap model instance by URL, assuming unique URL per sitemap
         $sitemap = Sitemap::where('url', $sitemapUrl)->first();
 
         if (!$sitemap) {
@@ -50,45 +36,41 @@ class AutoScanSitemapsJob implements ShouldQueue
             return;
         }
 
+        Log::info("Fetching URLs from Sitemap: {$sitemapUrl}");
         $urls = $this->fetchUrlsFromSitemap($sitemapUrl);
 
         foreach ($urls as $url) {
-            // Check if the URL is already in queued_urls or sitemap_urls
             $existsInQueued = QueuedUrl::where('url', $url)->exists();
             $existsInSitemap = SitemapUrl::where('page_url', $url)->exists();
 
             if (!$existsInQueued && !$existsInSitemap) {
-                // Add the new URL to the queued_urls table with the associated sitemap_id
+                Log::info("Queuing URL: {$url} with Sitemap ID: {$sitemap->id}");
                 QueuedUrl::create([
                     'sitemap_id' => $sitemap->id,
                     'url' => $url
                 ]);
 
-                // Add the new URL to the url_list table
+                Log::info("Adding URL to url_list: {$url} with Sitemap ID: {$sitemap->id}");
                 UrlList::create([
                     'url' => $url,
+                    'sitemap_id' => $sitemap->id,
                     'status' => 'queued',
                     'last_seen' => now(),
                 ]);
 
-                // Log the new URL added
                 Log::info("New URL added to queue: " . $url);
             } else {
-                // Update the last seen timestamp in the url_list table
                 UrlList::updateOrCreate(
                     ['url' => $url],
-                    ['last_seen' => now()]
+                    [
+                        'last_seen' => now(),
+                        'sitemap_id' => $sitemap->id,
+                    ]
                 );
             }
         }
     }
 
-    /**
-     * Fetch URLs from a sitemap, including handling nested sitemaps.
-     *
-     * @param string $sitemapUrl
-     * @return array
-     */
     protected function fetchUrlsFromSitemap($sitemapUrl)
     {
         $urls = [];
@@ -98,13 +80,11 @@ class AutoScanSitemapsJob implements ShouldQueue
 
             if ($xml !== false) {
                 if (isset($xml->sitemap)) {
-                    // Nested sitemap
                     foreach ($xml->sitemap as $nestedSitemapElement) {
                         $nestedSitemapUrl = (string)$nestedSitemapElement->loc;
                         $urls = array_merge($urls, $this->fetchUrlsFromSitemap($nestedSitemapUrl));
                     }
                 } elseif (isset($xml->url)) {
-                    // Regular sitemap
                     foreach ($xml->url as $urlElement) {
                         $urls[] = (string)$urlElement->loc;
                     }
