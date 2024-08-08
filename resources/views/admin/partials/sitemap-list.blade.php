@@ -108,6 +108,15 @@
 
                             sitemapTableBody.appendChild(sitemapRow);
                         });
+
+                        // Attach event listeners to the new checkboxes
+                        const autoScanToggles = document.querySelectorAll('.auto-scan-toggle');
+                        autoScanToggles.forEach(toggle => {
+                            toggle.addEventListener('change', function() {
+                                const sitemapId = this.getAttribute('data-sitemap-id');
+                                toggleAutoScan(sitemapId);
+                            });
+                        });
                     })
                     .catch(error => {
                         console.error('Error fetching sitemaps:', error);
@@ -117,7 +126,6 @@
 
 
         function toggleAutoScan(sitemapId) {
-            alert('yes');
             axios.post('/admin/sitemaps/toggle-auto-scan', {
                     sitemap_id: sitemapId
                 })
