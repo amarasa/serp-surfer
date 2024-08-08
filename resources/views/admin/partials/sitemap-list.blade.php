@@ -11,6 +11,8 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sitemap URL</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Auto Scanner</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Processed</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Processed</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
@@ -53,6 +55,38 @@
                             Process Sitemap
                         </button>
                     </form> @endif
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    @php
+                    $queuedCount = $sitemap->queuedUrls()->count();
+                    $processedCount = $sitemap->sitemapUrls()->count();
+                    $totalUrls = $queuedCount + $processedCount;
+                    @endphp
+                    @if ($totalUrls > 0)
+                    {{ $processedCount }} of {{ $totalUrls }} URLs Processed
+                    @if ($processedCount < $totalUrls) <span class="loading-spinner-container">currently processing
+                        <svg class="loading-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z" />
+                        </svg>
+                        </span>
+                        @endif
+                        @else
+                        Not yet processed
+                        @endif
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    @if ($totalUrls > 0)
+                    @php
+                    $lastProcessed = $sitemap->sitemapUrls()->latest()->first();
+                    @endphp
+                    @if ($lastProcessed)
+                    {{ $lastProcessed->created_at->diffForHumans() }}
+                    @else
+                    Waiting in queue
+                    @endif
+                    @else
+                    -
+                    @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <svg class="w-6 h-6 inline-block transition duration-300 ease-in-out hover:opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
