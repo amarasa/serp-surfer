@@ -170,8 +170,8 @@
                         sitemaps.forEach(sitemap => {
                             const sitemapRow = document.createElement('tr');
 
-                            const queuedCount = sitemap.queuedUrls.length;
-                            const processedCount = sitemap.sitemapUrls.length;
+                            const queuedCount = sitemap.queuedUrls ? sitemap.queuedUrls.length : 0;
+                            const processedCount = sitemap.sitemapUrls ? sitemap.sitemapUrls.length : 0;
                             const totalUrls = queuedCount + processedCount;
 
                             sitemapRow.innerHTML = `
@@ -209,7 +209,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                             ${totalUrls > 0
-                                ? (sitemap.sitemapUrls.length > 0
+                                ? (sitemap.sitemapUrls && sitemap.sitemapUrls.length > 0
                                     ? new Date(sitemap.sitemapUrls[0].created_at).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
                                     : 'Waiting in queue')
                                 : '-'}
