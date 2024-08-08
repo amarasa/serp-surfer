@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UrlList extends Model
 {
@@ -15,6 +16,7 @@ class UrlList extends Model
         'url',
         'status',
         'last_seen',
+        'sitemap_id',
     ];
 
     protected $casts = [
@@ -24,5 +26,10 @@ class UrlList extends Model
     public function urlList()
     {
         return $this->hasOne(UrlList::class, 'url', 'page_url');
+    }
+
+    public function sitemap(): BelongsTo
+    {
+        return $this->belongsTo(Sitemap::class, 'sitemap_id');
     }
 }
