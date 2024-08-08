@@ -30,21 +30,29 @@
                     @endforeach
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    @if($sitemap->sitemapUrls()->count() > 0)
+                    @php
+                    $queuedCount = $sitemap->queuedUrls()->count();
+                    $processedCount = $sitemap->sitemapUrls()->count();
+                    $totalUrls = $queuedCount + $processedCount;
+                    @endphp
+                    @if ($totalUrls > 0)
+                    @if ($queuedCount > 0)
+                    In Queue
+                    @else
                     <div class="flex justify-center">
                         <label class="inline-flex relative items-center cursor-pointer">
                             <input type="checkbox" class="sr-only peer auto-scan-toggle" data-sitemap-id="{{ $sitemap->id }}" {{ $sitemap->auto_scan ? 'checked' : '' }}>
                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
+                    @endif
                     @else
                     <form method="POST" action="{{ route('sitemap.queue', $sitemap->id) }}">
                         @csrf
                         <button type="submit" class="process-button text-indigo-600 hover:text-indigo-900 focus:outline-none">
                             Process Sitemap
                         </button>
-                    </form>
-                    @endif
+                    </form> @endif
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <svg class="w-6 h-6 inline-block transition duration-300 ease-in-out hover:opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
@@ -105,12 +113,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                     ${sitemap.sitemapUrls && sitemap.sitemapUrls.length > 0
-                                        ? `<div class="flex justify-center">
-                                                <label class="inline-flex relative items-center cursor-pointer">
-                                                    <input type="checkbox" class="sr-only peer auto-scan-toggle" data-sitemap-id="${sitemap.id}" ${sitemap.auto_scan ? 'checked' : ''}>
-                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                                </label>
-                                            </div>`
+                                        ? (sitemap.queuedUrls && sitemap.queuedUrls.length > 0 
+                                            ? 'In Queue' 
+                                            : `<div class="flex justify-center">
+                                                    <label class="inline-flex relative items-center cursor-pointer">
+                                                        <input type="checkbox" class="sr-only peer auto-scan-toggle" data-sitemap-id="${sitemap.id}" ${sitemap.auto_scan ? 'checked' : ''}>
+                                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                                    </label>
+                                                </div>`)
                                         : `<form method="POST" action="/admin/sitemaps/${sitemap.id}/queue">
                                                 @csrf
                                                 <button type="submit" class="process-button text-indigo-600 hover:text-indigo-900 focus:outline-none">
