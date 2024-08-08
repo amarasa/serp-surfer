@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('url_list', function (Blueprint $table) {
-            $table->unsignedBigInteger('sitemap_id')->after('id'); // Add sitemap_id column
+            $table->unsignedBigInteger('sitemap_id')->after('id')->nullable(); // Add sitemap_id column
             $table->foreign('sitemap_id')->references('id')->on('sitemaps')->onDelete('cascade'); // Add foreign key constraint
         });
     }
