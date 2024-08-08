@@ -170,40 +170,56 @@
                         sitemaps.forEach(sitemap => {
                             const sitemapRow = document.createElement('tr');
 
+                            const queuedCount = sitemap.queuedUrls.length;
+                            const processedCount = sitemap.sitemapUrls.length;
+                            const totalUrls = queuedCount + processedCount;
+
                             sitemapRow.innerHTML = `
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            ${sitemap.url}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                    ${sitemap.users.map(user => user.name).join(', ')}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                                    ${sitemap.sitemapUrls && sitemap.sitemapUrls.length > 0
-                                        ? (sitemap.queuedUrls && sitemap.queuedUrls.length > 0 
-                                            ? 'In Queue' 
-                                            : `<div class="flex justify-center">
-                                                    <label class="inline-flex relative items-center cursor-pointer">
-                                                        <input type="checkbox" class="sr-only peer auto-scan-toggle" data-sitemap-id="${sitemap.id}" ${sitemap.auto_scan ? 'checked' : ''}>
-                                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                                    </label>
-                                                </div>`)
-                                        : `<form method="POST" action="/admin/sitemaps/${sitemap.id}/queue">
-                                                @csrf
-                                                <button type="submit" class="process-button text-indigo-600 hover:text-indigo-900 focus:outline-none">
-                                                    Process Sitemap
-                                                </button>
-                                            </form>`}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <svg class="w-6 h-6 inline-block transition duration-300 ease-in-out hover:opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                                        <path d="M64 96c0-35.3 28.7-64 64-64l384 0c35.3 0 64 28.7 64 64l0 256-64 0 0-256L128 96l0 256-64 0L64 96zM0 403.2C0 392.6 8.6 384 19.2 384l601.6 0c10.6 0 19.2 8.6 19.2 19.2c0 42.4-34.4 76.8-76.8 76.8L76.8 480C34.4 480 0 445.6 0 403.2zM281 209l-31 31 31 31c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-48-48c-9.4-9.4-9.4-24.6 0-33.9l48-48c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM393 175l48 48c9.4 9.4 9.4 24.6 0 33.9l-48 48c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l31-31-31-31c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"/>
-                                    </svg>
-                                </td>
-                            `;
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    ${sitemap.url}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            ${sitemap.users.map(user => user.name).join(', ')}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            ${totalUrls > 0
+                                ? (queuedCount > 0
+                                    ? 'In Queue'
+                                    : `<div class="flex justify-center">
+                                        <label class="inline-flex relative items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer auto-scan-toggle" data-sitemap-id="${sitemap.id}" ${sitemap.auto_scan ? 'checked' : ''}>
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>`)
+                                : `<form method="POST" action="/admin/sitemaps/${sitemap.id}/queue">
+                                        @csrf
+                                        <button type="submit" class="process-button text-indigo-600 hover:text-indigo-900 focus:outline-none">
+                                            Process Sitemap
+                                        </button>
+                                    </form>`}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            ${totalUrls > 0
+                                ? `${processedCount} of ${totalUrls} URLs Processed`
+                                : 'Not yet processed'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            ${totalUrls > 0
+                                ? (sitemap.sitemapUrls.length > 0
+                                    ? new Date(sitemap.sitemapUrls[0].created_at).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                                    : 'Waiting in queue')
+                                : '-'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <svg class="w-6 h-6 inline-block transition duration-300 ease-in-out hover:opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                <path d="M64 96c0-35.3 28.7-64 64-64l384 0c35.3 0 64 28.7 64 64l0 256-64 0 0-256L128 96l0 256-64 0L64 96zM0 403.2C0 392.6 8.6 384 19.2 384l601.6 0c10.6 0 19.2 8.6 19.2 19.2c0 42.4-34.4 76.8-76.8 76.8L76.8 480C34.4 480 0 445.6 0 403.2zM281 209l-31 31 31 31c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-48-48c-9.4-9.4-9.4-24.6 0-33.9l48-48c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM393 175l48 48c9.4 9.4 9.4 24.6 0 33.9l-48 48c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l31-31-31-31c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"/>
+                            </svg>
+                        </td>
+                    `;
 
                             sitemapTableBody.appendChild(sitemapRow);
                         });
