@@ -91,8 +91,8 @@
                                         @endif
                                 </td>
 
-
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-300">
+                                    @if ($totalUrls > 0)
                                     @php
                                     $lastProcessed = $sitemap->sitemapUrls()->latest()->first();
                                     @endphp
@@ -101,7 +101,11 @@
                                     @else
                                     Waiting in queue
                                     @endif
+                                    @else
+                                    -
+                                    @endif
                                 </td>
+
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium">
                                     @if ($totalUrls > 0)
