@@ -47,4 +47,20 @@ class AdminController extends Controller
         $users = User::where('name', 'like', "%{$query}%")->get();
         return response()->json($users);
     }
+
+    public function toggleSuspend(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if ($user) {
+            $user->suspended = !$user->suspended;
+            $user->save();
+
+            $status = $user->suspended ? 'User suspended successfully.' : 'User unsuspended successfully.';
+
+            return response()->json(['success' => $status]);
+        }
+
+        return response()->json(['success' => false]);
+    }
 }

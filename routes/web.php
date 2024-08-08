@@ -40,7 +40,8 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
     Route::get('/admin/sitemaps', [AdminController::class, 'sitemaps'])->name('admin.sitemaps');
     Route::get('/admin/urls', [AdminController::class, 'urls'])->name('admin.urls');
 
-    Route::get('/admin/users/search', [AdminController::class, 'searchUsers']);
+    Route::get('/admin/users/search', [AdminController::class, 'searchUsers'])->name('search.users');
+    Route::post('/admin/users/suspend', [AdminController::class, 'toggleSuspend'])->name('toggle.suspend');
 });
 
 require __DIR__ . '/auth.php';
