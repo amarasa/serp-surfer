@@ -167,22 +167,22 @@
                     });
             });
         });
-
-        function confirmResync() {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: `By re-syncing your sitemaps, your already processed data will be removed from {{ config('app.name') }} and will need to be re-processed.`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, re-sync it!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('resync-form').submit();
-                }
-            });
-        }
     });
+
+    function confirmResync() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `By re-syncing your sitemaps, your already processed data will be removed from {{ config('app.name') }} and will need to be re-processed.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, re-sync it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('resync-form').submit();
+            }
+        });
+    }
 </script>
