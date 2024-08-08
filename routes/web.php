@@ -39,6 +39,8 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
     Route::get('/admin/sitemaps', [AdminController::class, 'sitemaps'])->name('admin.sitemaps');
     Route::get('/admin/urls', [AdminController::class, 'urls'])->name('admin.urls');
+
+    Route::get('/admin/users/search', [AdminController::class, 'searchUsers']);
 });
 
 require __DIR__ . '/auth.php';
