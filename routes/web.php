@@ -42,6 +42,12 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
 
     Route::get('/admin/users/search', [AdminController::class, 'searchUsers'])->name('search.users');
     Route::post('/admin/users/suspend', [AdminController::class, 'toggleSuspend'])->name('toggle.suspend');
+    Route::post('/admin/users/reset-password', [AdminController::class, 'resetPassword'])->name('reset.password');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('delete.user');
 });
+
+//-- tests
+//Route::get('/send-test-email', 'App\Http\Controllers\TestEmailController@sendTestEmail');
+
 
 require __DIR__ . '/auth.php';

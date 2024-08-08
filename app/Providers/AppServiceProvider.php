@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckSuspended;
+use App\Http\Middleware\CheckPasswordReset;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
         // Ensure you are using Route and not Router
         Route::aliasMiddleware('role', \App\Http\Middleware\RoleMiddleware::class);
         Route::aliasMiddleware('checkSuspended', CheckSuspended::class);
+        Route::aliasMiddleware('checkPasswordReset', CheckPasswordReset::class);
     }
 }
