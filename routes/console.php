@@ -7,5 +7,5 @@ use App\Jobs\AutoScanSitemapsJob;
 use App\Jobs\RemoveOldUrlsJob;
 
 Schedule::job(new ProcessQueuedUrl)->everyMinute();
-Schedule::job(new AutoScanSitemapsJob)->everyMinute();
-Schedule::job(new RemoveOldUrlsJob)->everyMinute();
+Schedule::job(new AutoScanSitemapsJob)->dailyAt('8:00')->timezone('America/Detroit');
+Schedule::job(new RemoveOldUrlsJob)->everySixHours();
