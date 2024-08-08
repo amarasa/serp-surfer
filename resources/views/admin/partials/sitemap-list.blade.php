@@ -176,49 +176,35 @@
         }
 
         function processSitemap(sitemapId) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This will initiate the processing of the sitemap.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, process it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    axios.post('/admin/sitemaps/process', {
-                            sitemap_id: sitemapId
-                        })
-                        .then(response => {
-                            if (response.data.success) {
-                                Swal.fire({
-                                    title: 'Success!',
-                                    text: response.data.message,
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                }).then(() => {
-                                    location.reload(); // Reload the page to reflect changes
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: response.data.message,
-                                    icon: 'error',
-                                    confirmButtonText: 'OK'
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error processing sitemap:', error);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'An error occurred while processing the sitemap.',
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
+            axios.post(`/admin/sitemaps/${sitemapId}/queue`)
+                .then(response => {
+                    if (response.data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Sitemap processed successfully.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            location.reload(); // Reload the page to reflect changes
                         });
-                }
-            });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Failed to process sitemap.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error processing sitemap:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while processing the sitemap.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
         }
     </script>
 </section>

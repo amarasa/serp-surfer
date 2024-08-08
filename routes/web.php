@@ -47,7 +47,7 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
 
     Route::post('/admin/sitemaps/toggle-auto-scan', [AdminController::class, 'toggleAutoScan'])->name('toggle.auto.scan');
     Route::get('/admin/sitemaps/search', [AdminController::class, 'searchSitemaps'])->name('admin.search.sitemaps');
-    Route::post('/admin/sitemaps/process', [AdminController::class, 'processSitemap'])->name('process.sitemap');
+    Route::post('/admin/sitemaps/{sitemap}/queue', [QueueController::class, 'queueSitemap'])->name('sitemap.queue');
 });
 
 //-- tests
