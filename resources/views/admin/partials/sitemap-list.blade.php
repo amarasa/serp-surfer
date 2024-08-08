@@ -170,9 +170,16 @@
                         sitemaps.forEach(sitemap => {
                             const sitemapRow = document.createElement('tr');
 
-                            const queuedCount = sitemap.queuedUrls ? sitemap.queuedUrls.length : 0;
-                            const processedCount = sitemap.sitemapUrls ? sitemap.sitemapUrls.length : 0;
+                            const queuedCount = sitemap.queued_urls ? sitemap.queued_urls.length : 0;
+                            const processedCount = sitemap.sitemap_urls ? sitemap.sitemap_urls.length : 0;
                             const totalUrls = queuedCount + processedCount;
+
+                            const lastProcessedDate = sitemap.sitemap_urls && sitemap.sitemap_urls.length > 0 ? sitemap.sitemap_urls[0].created_at : null;
+                            const lastProcessed = lastProcessedDate ? new Date(lastProcessedDate).toLocaleString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric'
+                            }) : 'Waiting in queue';
 
                             sitemapRow.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -208,11 +215,7 @@
                                 : 'Not yet processed'}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            ${totalUrls > 0
-                                ? (sitemap.sitemapUrls && sitemap.sitemapUrls.length > 0
-                                    ? new Date(sitemap.sitemapUrls[0].created_at).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-                                    : 'Waiting in queue')
-                                : '-'}
+                            ${totalUrls > 0 ? lastProcessed : '-'}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <svg class="w-6 h-6 inline-block transition duration-300 ease-in-out hover:opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
