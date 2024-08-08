@@ -43,6 +43,7 @@ class QueueController extends Controller
                 // Add to the url_list table with status 'queued'
                 UrlList::create([
                     'url' => $url,
+                    'sitemap_id' => $sitemap->id,
                     'status' => 'queued',
                     'last_seen' => now(),
                 ]);
