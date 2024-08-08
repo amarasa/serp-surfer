@@ -120,4 +120,122 @@ class AdminController extends Controller
 
         return response()->json($sitemaps);
     }
+
+
+    public function processSitemap(Request $request)
+    {
+        $sitemapId = $request->input('sitemap_id');
+        $sitemap = Sitemap::find($sitemapId);
+
+        if (!$sitemap) {
+            return response()->json(['success' => false, 'message' => 'Sitemap not found']);
+        }
+
+        try {
+            $this->client->setAccessToken(Auth::user()->google_token);
+
+            if ($this->client->isAccessTokenExpired()) {
+                $this->client->fetchAccessTokenWithRefreshToken(Auth::user()->google_refresh_token);
+                $newToken = $this->client->getAccessToken();
+                Auth::user()->google_token = $newToken['access_token'];
+                Auth::user()->google_refresh_token = $newToken['refresh_token'];
+                Auth::user()->save();
+            }
+
+            $service = new Google_Service_SearchConsole($this->client);
+            $sitemaps = $service->sitemaps->listSitemaps($sitemap->url);
+
+            foreach ($sitemaps->getSitemap() as $sitemapData) {
+                $type = strtolower($sitemapData->getType());
+                $url = $sitemapData->getPath();
+
+                // Find or create the sitemap
+                $sitemapModel = Sitemap::firstOrCreate(
+                    [
+                        'url' => $url,
+                    ],
+                    [
+                        'is_index' => $type === 'index',
+                    ]
+                );
+
+                // Queue URLs for processing
+                $this->queueSitemapUrls($sitemapModel);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Sitemap processing initiated']);
+        } catch (\Exception $e) {
+            Log::error("Error processing sitemap: {$e->getMessage()}");
+            return response()->json(['success' => false, 'message' => 'Error processing sitemap']);
+        }
+    }
+
+    protected function queueSitemapUrls(Sitemap $sitemap)
+    {
+        $urls = $this->fetchUrlsFromSitemap($sitemap->url);
+
+        foreach ($urls as $url) {
+            // Check if the URL is already in queued_urls or sitemap_urls
+            $existsInQueued = QueuedUrl::where('url', $url)->exists();
+            $existsInSitemap = SitemapUrl::where('page_url', $url)->exists();
+
+            if (!$existsInQueued && !$existsInSitemap) {
+                // Add the new URL to the queued_urls table with the associated sitemap_id
+                QueuedUrl::create([
+                    'sitemap_id' => $sitemap->id,
+                    'url' => $url
+                ]);
+
+                // Add the new URL to the url_list table
+                UrlList::create([
+                    'url' => $url,
+                    'sitemap_id' => $sitemap->id,
+                    'status' => 'queued',
+                    'last_seen' => now(),
+                ]);
+
+                // Log the new URL added
+                Log::info("New URL added to queue: " . $url);
+            } else {
+                // Update the last seen timestamp in the url_list table
+                UrlList::updateOrCreate(
+                    ['url' => $url],
+                    [
+                        'last_seen' => now(),
+                        'sitemap_id' => $sitemap->id,
+                    ]
+                );
+            }
+        }
+    }
+
+    protected function fetchUrlsFromSitemap($sitemapUrl)
+    {
+        $urls = [];
+
+        try {
+            $xml = simplexml_load_file($sitemapUrl);
+
+            if ($xml !== false) {
+                if (isset($xml->sitemap)) {
+                    // Nested sitemap
+                    foreach ($xml->sitemap as $nestedSitemapElement) {
+                        $nestedSitemapUrl = (string)$nestedSitemapElement->loc;
+                        $urls = array_merge($urls, $this->fetchUrlsFromSitemap($nestedSitemapUrl));
+                    }
+                } elseif (isset($xml->url)) {
+                    // Regular sitemap
+                    foreach ($xml->url as $urlElement) {
+                        $urls[] = (string)$urlElement->loc;
+                    }
+                }
+            } else {
+                Log::error("Failed to load XML for URL: {$sitemapUrl}");
+            }
+        } catch (\Exception $e) {
+            Log::error("Error fetching URLs from sitemap: {$e->getMessage()} for URL: {$sitemapUrl}");
+        }
+
+        return $urls;
+    }
 }

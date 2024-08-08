@@ -37,7 +37,7 @@
                     @endphp
                     @if ($totalUrls > 0)
                     @if ($queuedCount > 0)
-                    Waiting in Queue
+                    In Queue
                     @else
                     <div class="flex justify-center">
                         <label class="inline-flex relative items-center cursor-pointer">
@@ -110,7 +110,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                     ${sitemap.sitemapUrls && sitemap.sitemapUrls.length > 0
                                         ? (sitemap.queuedUrls && sitemap.queuedUrls.length > 0 
-                                            ? 'Waiting in Queue' 
+                                            ? 'In Queue' 
                                             : `<div class="flex justify-center">
                                                     <label class="inline-flex relative items-center cursor-pointer">
                                                         <input type="checkbox" class="sr-only peer auto-scan-toggle" data-sitemap-id="${sitemap.id}" ${sitemap.auto_scan ? 'checked' : ''}>
@@ -176,7 +176,49 @@
         }
 
         function processSitemap(sitemapId) {
-            // Add your logic to process the sitemap
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will initiate the processing of the sitemap.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, process it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.post('/admin/sitemaps/process', {
+                            sitemap_id: sitemapId
+                        })
+                        .then(response => {
+                            if (response.data.success) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: response.data.message,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    location.reload(); // Reload the page to reflect changes
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: response.data.message,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error processing sitemap:', error);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'An error occurred while processing the sitemap.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        });
+                }
+            });
         }
     </script>
 </section>
