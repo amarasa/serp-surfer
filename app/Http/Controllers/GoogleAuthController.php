@@ -115,68 +115,11 @@ class GoogleAuthController extends Controller
                 );
 
                 $user->sitemaps()->syncWithoutDetaching($sitemapModel->id);
-
-                // Queue the sitemap URLs for processing
-                $this->queueSitemapUrls($sitemapModel);
             }
         }
 
         return redirect()->route('gsc')->with('success', 'Sitemaps Synced!');
     }
-
-    public function queueSitemapUrls(Sitemap $sitemap)
-    {
-        try {
-            $urls = $this->fetchUrlsFromSitemap($sitemap->url); // Assume this method fetches URLs from the sitemap
-
-            foreach ($urls as $url) {
-                UrlList::create([
-                    'sitemap_id' => $sitemap->id,
-                    'url' => $url,
-                    'status' => 'queued',
-                    'last_seen' => now(),
-                ]);
-            }
-
-            Log::info('queueSitemap method called for sitemap ID: ' . $sitemap->id);
-        } catch (\Exception $e) {
-            Log::error('Error queuing sitemap URLs: ' . $e->getMessage());
-        }
-    }
-
-    public function fetchUrlsFromSitemap($sitemapUrl)
-    {
-        try {
-            $xml = simplexml_load_file($sitemapUrl);
-
-            // Check if the sitemap is an index
-            if (isset($xml->sitemap)) {
-                $urls = [];
-
-                // Recursively fetch URLs from each sitemap in the index
-                foreach ($xml->sitemap as $sitemap) {
-                    $urls = array_merge($urls, $this->fetchUrlsFromSitemap((string) $sitemap->loc));
-                }
-
-                return $urls;
-            } elseif (isset($xml->url)) {
-                $urls = [];
-
-                // Extract URLs from the sitemap
-                foreach ($xml->url as $url) {
-                    $urls[] = (string) $url->loc;
-                }
-
-                return $urls;
-            } else {
-                throw new Exception('Invalid sitemap format.');
-            }
-        } catch (\Exception $e) {
-            Log::error('Error fetching URLs from sitemap: ' . $e->getMessage());
-            return [];
-        }
-    }
-
 
     public function resyncSitemaps()
     {
