@@ -7,9 +7,9 @@
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 @if(auth()->user()->sitemaps()->count() > 0)
-            <form method="POST" action="{{ route('sitemaps.resync') }}">
+            <form id="resync-form" method="POST" action="{{ route('sitemaps.resync') }}">
                 @csrf
-                <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 dark:hover:bg-blue-500 focus:bg-blue-500 dark:focus:bg-blue-500 active:bg-blue-700 dark:active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                <button type="button" class="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 dark:hover:bg-blue-500 focus:bg-blue-500 dark:focus:bg-blue-500 active:bg-blue-700 dark:active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150" onclick="confirmResync()">
                     Re-sync Sitemaps
                 </button>
             </form>
@@ -167,5 +167,22 @@
                     });
             });
         });
+
+        function confirmResync() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `By re-syncing your sitemaps, your already processed data will be removed from {{ config('app.name') }} and will need to be re-processed.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, re-sync it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('resync-form').submit();
+                }
+            });
+        }
     });
 </script>
