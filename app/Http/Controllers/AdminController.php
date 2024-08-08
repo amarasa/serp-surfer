@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-
+use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -62,5 +62,36 @@ class AdminController extends Controller
         }
 
         return response()->json(['success' => false]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if ($user) {
+            $user->force_password_reset = true;
+            $user->save();
+
+            // Send password reset email
+            $status = Password::sendResetLink(['email' => $user->email]);
+
+            if ($status == Password::RESET_LINK_SENT) {
+                return response()->json(['success' => 'Password reset email sent successfully.']);
+            }
+
+            return response()->json(['success' => false, 'message' => __($status)]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
+    public function deleteUser(User $user)
+    {
+        try {
+            $user->delete();
+            return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete user.']);
+        }
     }
 }
