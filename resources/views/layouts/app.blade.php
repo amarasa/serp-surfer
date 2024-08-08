@@ -19,19 +19,16 @@
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
 
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
-    <div class="bg-gray-100 dark:bg-gray-900">
+<body class="font-sans antialiased flex flex-col min-h-screen">
+    <div class="dark:bg-gray-900 flex-grow">
         @include('layouts.navigation')
         @include('layouts.header')
 
-
-
         <!-- Page Content -->
-        <main>
+        <main class="flex-grow">
             @if (session('info'))
             <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition.opacity.duration.500ms @click="show = false" class="fixed top-4 right-4 max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-neutral-800 dark:border-neutral-700" role="alert">
                 <div class="flex p-4">
@@ -83,13 +80,11 @@
             </div>
             @endif
 
-
             {{ $slot }}
         </main>
     </div>
 
     @include('layouts.footer')
-
 
 </body>
 

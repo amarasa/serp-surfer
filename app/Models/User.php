@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'google_token',
         'google_refresh_token',
+        'suspended'
     ];
 
     /**
