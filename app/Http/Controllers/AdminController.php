@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -12,12 +14,18 @@ class AdminController extends Controller
         return view('admin.index', compact('ayoo'));
     }
 
-    public function users()
+    public function users(Request $request)
     {
-        $ayoo = 'User List';
-        // Add your logic here to get the user list
-        return view('admin.index', compact('ayoo'));
+        $query = $request->input('query');
+
+        // Fetch users with pagination and search functionality
+        $users = User::when($query, function ($queryBuilder) use ($query) {
+            return $queryBuilder->where('name', 'like', "%{$query}%");
+        })->paginate(12);
+
+        return view('admin.index', compact('users', 'query'));
     }
+
 
     public function sitemaps()
     {
@@ -31,5 +39,12 @@ class AdminController extends Controller
         $ayoo = 'URL List';
         // Add your logic here to get the URL list
         return view('admin.index', compact('ayoo'));
+    }
+
+    public function searchUsers(Request $request)
+    {
+        $query = $request->input('query');
+        $users = User::where('name', 'like', "%{$query}%")->get();
+        return response()->json($users);
     }
 }
