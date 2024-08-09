@@ -58,7 +58,7 @@ class AdminController extends Controller
                 ->paginate(12);
         }
 
-        return view('admin.url-list', compact('domains', 'urls', 'selectedDomain'));
+        return view('admin.index', compact('domains', 'urls', 'selectedDomain'));
     }
 
     public function searchUsers(Request $request)
