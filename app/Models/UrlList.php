@@ -32,4 +32,9 @@ class UrlList extends Model
     {
         return $this->belongsTo(Sitemap::class, 'sitemap_id');
     }
+
+    public function sitemapUrl()
+    {
+        return $this->belongsTo(SitemapUrl::class, 'url', 'page_url');
+    }
 }

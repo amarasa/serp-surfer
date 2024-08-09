@@ -20,6 +20,9 @@
                     <a href="{{ route('admin.urls') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
                         URL List
                     </a>
+                    <a href="/horizon" target="_blank" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
+                        Horizon
+                    </a>
                 </nav>
             </div>
         </div>
