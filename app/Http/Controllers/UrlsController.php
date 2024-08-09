@@ -41,6 +41,18 @@ class UrlsController extends Controller
             if ($urls->isNotEmpty()) {
                 $sitemapId = $urls->first()->sitemap_id;
             }
+
+            // Get the URLs from the index_queue for the selected domain
+            $queuedUrls = \DB::table('index_queue')
+                ->whereIn('sitemap_id', $sitemaps->pluck('id'))
+                ->whereIn('url', $urls->pluck('page_url'))
+                ->pluck('url')
+                ->toArray();
+
+            // Add queued URLs to each URL's object
+            foreach ($urls as $url) {
+                $url->inQueue = in_array($url->page_url, $queuedUrls);
+            }
         }
 
         return view('dashboard', compact('domains', 'urls', 'selectedDomain', 'sitemapId'));
