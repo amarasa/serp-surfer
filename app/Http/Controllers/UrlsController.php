@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\SitemapUrl;
-use App\Models\UrlList; // Import the UrlList model
+use App\Models\UrlList;
+use App\Models\IndexQueue;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -40,18 +41,14 @@ class UrlsController extends Controller
             // Get the sitemap_id from the first URL in the collection if URLs are found
             if ($urls->isNotEmpty()) {
                 $sitemapId = $urls->first()->sitemap_id;
-            }
 
-            // Get the URLs from the index_queue for the selected domain
-            $queuedUrls = \DB::table('index_queue')
-                ->whereIn('sitemap_id', $sitemaps->pluck('id'))
-                ->whereIn('url', $urls->pluck('page_url'))
-                ->pluck('url')
-                ->toArray();
+                // Check each URL if it is in the index queue
+                foreach ($urls as $url) {
+                    $inQueue = IndexQueue::where('url', $url->page_url)->exists();
 
-            // Add queued URLs to each URL's object
-            foreach ($urls as $url) {
-                $url->inQueue = in_array($url->page_url, $queuedUrls);
+                    // Add a custom attribute to the URL model to indicate if it's in the queue
+                    $url->inQueue = $inQueue;
+                }
             }
         }
 
