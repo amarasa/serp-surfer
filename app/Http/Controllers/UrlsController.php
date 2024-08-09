@@ -52,6 +52,7 @@ class UrlsController extends Controller
             }
         }
 
+        dd($urls);
         return view('dashboard', compact('domains', 'urls', 'selectedDomain', 'sitemapId'));
     }
 }
