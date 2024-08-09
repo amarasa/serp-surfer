@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\Sitemap;
+use App\Models\IndexQueue;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 
@@ -141,5 +142,36 @@ class GoogleAuthController extends Controller
         })->delete();
 
         return $this->syncSitemaps();
+    }
+
+    public function submitIndexList(Request $request)
+    {
+        // Step 1: Retrieve the list of URLs submitted from the request
+        $submittedUrls = $request->input('urls'); // Assuming 'urls' is an array of URLs
+
+        // Initialize an array to hold the URLs that were successfully added to the index_queue
+        $addedUrls = [];
+
+        foreach ($submittedUrls as $url) {
+            // Step 2: Check if the URL is already in the index_queue
+            $existingEntry = IndexQueue::where('url', $url)->first();
+
+            if (!$existingEntry) {
+                // Step 3: Add the URL to the index_queue table
+                $indexQueueEntry = IndexQueue::create([
+                    'url' => $url,
+                    'sitemap_id' => $request->input('sitemap_id'), // Assuming sitemap_id is also provided in the request
+                    'requested_index_date' => now(),
+                    // 'last_scanned_date' => null, // This will be set later when scanned
+                    'submission_count' => 1,
+                ]);
+
+                // Add the successfully added URL to the confirmation list
+                $addedUrls[] = $url;
+            }
+        }
+
+        // Step 4: Return the list of submitted URLs to the view
+        return view('pages.indexing', ['urls' => $addedUrls]);
     }
 }

@@ -39,4 +39,9 @@ class Sitemap extends Model
     {
         return $this->hasMany(UrlList::class, 'sitemap_id');
     }
+
+    public function indexQueue()
+    {
+        return $this->hasMany(IndexQueue::class);
+    }
 }

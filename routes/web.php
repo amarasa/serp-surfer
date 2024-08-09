@@ -30,6 +30,10 @@ Route::middleware('auth', 'checkSuspended')->group(function () {
     Route::get('/fetch-urls', [UrlsController::class, 'getUrlsByDomain']);
     Route::post('sitemaps/{sitemap}/toggle-auto-scan', [QueueController::class, 'toggleAutoScan'])->name('sitemaps.toggleAutoScan');
 
+
+    //-- Indexing
+    Route::post('/dashboard/indexing', [GoogleAuthController::class, 'submitIndexList'])->name('submit.indexing');
+
     //-- Navigational pages
     Route::get('/dashboard', [UrlsController::class, 'index'])->name('dashboard');
 });
