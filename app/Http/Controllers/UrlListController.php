@@ -9,18 +9,25 @@ class UrlListController extends Controller
 {
     public function index(Request $request)
     {
-        // Get distinct domains for the dropdown
-        $domains = SitemapUrl::distinct()->pluck('domain_column'); // Adjust 'domain_column' to the actual column name in your table
-        dd($domains);
-        // Get the selected domain from the request, default to the first domain if none is selected
-        $selectedDomain = $request->input('domain', $domains->first());
+        // Fetch distinct domains from all sitemap URLs
+        $domains = SitemapUrl::selectRaw('DISTINCT(SUBSTRING_INDEX(SUBSTRING_INDEX(page_url, "/", 3), "/", -1)) AS domain')
+            ->pluck('domain')
+            ->unique()
+            ->values()
+            ->all();
 
-        // Fetch URLs related to the selected domain and paginate
-        $urls = SitemapUrl::where('domain_column', $selectedDomain)
-            ->with('urlList') // Ensure the relationship exists and is properly defined
-            ->paginate(12);
+        // Get the selected domain from the request or use the first one by default
+        $selectedDomain = $request->query('domain', $domains ? $domains[0] : null);
 
-        // Pass the data to the view
-        return view('admin.url-list', compact('domains', 'selectedDomain', 'urls'));
+        $urls = collect();
+        if ($selectedDomain) {
+            $urls = SitemapUrl::where('page_url', 'like', "%{$selectedDomain}%")
+                ->with(['urlList' => function ($query) {
+                    $query->select('url', 'last_seen'); // Select the relevant columns
+                }])
+                ->paginate(12);
+        }
+
+        return view('admin.url-list', compact('domains', 'urls', 'selectedDomain'));
     }
 }
