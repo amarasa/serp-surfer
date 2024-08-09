@@ -9,7 +9,7 @@ class UrlListController extends Controller
 {
     public function index(Request $request)
     {
-        $selectedDomain = $request->input('domain', null); // Add this to ensure it's always set
+        $selectedDomain = $request->input('domain', $domains->first());
 
         // Get the selected domain from the request
         $selectedDomain = $request->input('domain');
