@@ -26,6 +26,8 @@ class ProcessQueuedUrl implements ShouldQueue
      */
     public function handle()
     {
+        Log::info("WORKING: ProcessQueuedUrl");
+
         try {
             // Fetch the oldest URL from the queue
             $queuedUrl = QueuedUrl::orderBy('id')->first();

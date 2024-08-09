@@ -19,6 +19,8 @@ class AutoScanSitemapsJob implements ShouldQueue
 
     public function handle()
     {
+        Log::info("WORKING: AutoScanSiteMapsJob");
+
         $sitemaps = Sitemap::where('auto_scan', true)->get();
 
         foreach ($sitemaps as $sitemap) {

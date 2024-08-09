@@ -24,6 +24,8 @@ class RemoveOldUrlsJob implements ShouldQueue
      */
     public function handle()
     {
+        Log::info("WORKING: RemoveOldUrlsJob");
+
         // Get the current time minus 72 hours
         $threshold = Carbon::now()->subHours(72);
 

@@ -21,6 +21,8 @@ class Janitor implements ShouldQueue
      */
     public function handle()
     {
+        Log::info("WORKING: Janitor");
+
         // Fetch and delete URLs with null sitemap_id
         $nullSitemapUrls = UrlList::whereNull('sitemap_id')->get();
 
