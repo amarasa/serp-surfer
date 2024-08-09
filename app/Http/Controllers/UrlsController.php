@@ -28,6 +28,7 @@ class UrlsController extends Controller
         $selectedDomain = $request->query('domain');
 
         $urls = collect();
+        $sitemapId = null;  // Default to null in case there are no URLs
         if ($selectedDomain) {
             $urls = SitemapUrl::where('page_url', 'like', "%{$selectedDomain}%")
                 ->whereIn('sitemap_id', $sitemaps->pluck('id'))
@@ -35,8 +36,13 @@ class UrlsController extends Controller
                     $query->select('url', 'last_seen'); // Select the relevant columns
                 }])
                 ->paginate(12);
+
+            // Get the sitemap_id from the first URL in the collection if URLs are found
+            if ($urls->isNotEmpty()) {
+                $sitemapId = $urls->first()->sitemap_id;
+            }
         }
 
-        return view('dashboard', compact('domains', 'urls', 'selectedDomain'));
+        return view('dashboard', compact('domains', 'urls', 'selectedDomain', 'sitemapId'));
     }
 }

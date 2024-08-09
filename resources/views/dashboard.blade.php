@@ -144,7 +144,7 @@
                             </tbody>
                         </table>
                         @csrf
-                        <input type="hidden" name="sitemap_id" value="{{ $sitemapId }}"> <!-- Assuming you pass sitemap ID to the view -->
+                        <input type="hidden" name="sitemap_id" value="{{ $sitemapId }}">
 
                         <!-- Submit Button -->
                         <div class="mt-4">
