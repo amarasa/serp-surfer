@@ -1,7 +1,7 @@
 <section id="url-list" class="pt-8 pb-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
     <!-- Domain Selector -->
     <div id="domain-selector" class="relative inline-block w-1/4">
-        <form id="domain-form" method="GET" action="{{ route('url.list') }}">
+        <form id="domain-form" method="GET" action="{{ route('admin.urls') }}">
             <input type="hidden" name="domain" id="selected-domain" value="{{ $selectedDomain ?? ($domains->first() ?? '') }}">
             <div class="relative">
                 <button type="button" id="dropdown-button" class="w-full text-left bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm pl-3 pr-10 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500">

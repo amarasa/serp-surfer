@@ -6,7 +6,6 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\UrlsController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\UrlListController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -49,8 +48,6 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
     Route::post('/admin/sitemaps/toggle-auto-scan', [AdminController::class, 'toggleAutoScan'])->name('toggle.auto.scan');
     Route::get('/admin/sitemaps/search', [AdminController::class, 'searchSitemaps'])->name('admin.search.sitemaps');
     Route::post('/admin/sitemaps/{sitemap}/queue', [QueueController::class, 'queueSitemap'])->name('admin.sitemap.queue');
-
-    Route::get('/admin/url-list', [UrlListController::class, 'index'])->name('url.list');
 });
 
 //-- tests
