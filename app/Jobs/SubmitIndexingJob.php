@@ -4,9 +4,9 @@ namespace App\Jobs;
 
 use App\Models\IndexQueue;
 use App\Models\User;
-use Carbon\Carbon;
 use Google_Client;
 use Google_Service_Indexing;
+use Google_Service_Indexing_UrlNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,84 +18,86 @@ class SubmitIndexingJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
-        // Retrieve all URLs from the index_queue table that need to be processed
-        $urlsToProcess = IndexQueue::whereNull('requested_index_date')
-            ->orWhere('requested_index_date', '<=', Carbon::now()->subDays(7))
+        Log::info("WORKING: SubmitIndexingJob");
+
+        // Fetch URLs from the index_queue table
+        $queuedUrls = IndexQueue::whereNull('requested_index_date')
+            ->orWhere('requested_index_date', '<=', now()->subDays(7))
             ->get();
 
-        foreach ($urlsToProcess as $indexQueueItem) {
-            // Retrieve the user associated with the sitemap
-            $user = $indexQueueItem->sitemap->users->first(); // Adjust as needed to get the correct user
+        foreach ($queuedUrls as $queuedUrl) {
+            $sitemap = $queuedUrl->sitemap;
 
-            if ($user) {
-                try {
-                    // Submit the URL for indexing
-                    $this->submitToGSC($indexQueueItem->url, $user);
+            if ($sitemap) {
+                $user = $sitemap->users->first(); // Assuming each sitemap belongs to multiple users
 
-                    // Update the requested_index_date and increment submission_count
-                    $indexQueueItem->update([
-                        'requested_index_date' => Carbon::now(),
-                        'submission_count' => $indexQueueItem->submission_count + 1,
-                    ]);
-                } catch (\Exception $e) {
-                    Log::error("Failed to submit URL for indexing: {$indexQueueItem->url}", ['error' => $e->getMessage()]);
+                if ($user) {
+                    try {
+                        // Submit URL to Google Search Console
+                        $this->submitToGSC($queuedUrl->url, $user);
+
+                        // Update the requested_index_date and increment submission_count
+                        $queuedUrl->update([
+                            'requested_index_date' => now(),
+                            'submission_count' => $queuedUrl->submission_count + 1,
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error("Failed to submit URL for indexing: {$queuedUrl->url}. Error: {$e->getMessage()}");
+                    }
+                } else {
+                    Log::error("No user associated with the sitemap ID: {$queuedUrl->sitemap_id}");
                 }
             } else {
-                Log::error("No user associated with sitemap for URL: {$indexQueueItem->url}");
+                Log::error("No sitemap found for ID: {$queuedUrl->sitemap_id}");
             }
         }
     }
 
-    /**
-     * Submit a URL to Google Search Console for indexing.
-     *
-     * @param string $url
-     * @param User $user
-     * @throws \Exception
-     */
     protected function submitToGSC(string $url, User $user)
     {
-        if (!$user->google_token || !$user->google_refresh_token) {
-            throw new \Exception("GSC credentials not found or invalid for user ID: {$user->id}");
-        }
-
         $client = new Google_Client();
-        $client->setAccessToken([
-            'access_token' => $user->google_token,
-            'refresh_token' => $user->google_refresh_token,
-            'expires_in' => 3600,
-            'created' => time(),
-        ]);
+        $client->setApplicationName(env('GOOGLE_APPLICATION_NAME'));
+        $client->setClientId(env('GOOGLE_CLIENT_ID'));
+        $client->setClientSecret(env('GOOGLE_CLIENT_SECRET'));
+        $client->setRedirectUri(env('GOOGLE_REDIRECT_URI'));
+        $client->setAccessType('offline');
 
-        // Refresh the token if it's expired
+        // Retrieve tokens from the user model
+        $accessToken = $user->google_token;
+        $refreshToken = $user->google_refresh_token;
+
+        // Set the access token on the client
+        $client->setAccessToken($accessToken);
+
+        // Check if the access token is expired and refresh it if necessary
         if ($client->isAccessTokenExpired()) {
-            $client->refreshToken($user->google_refresh_token);
+            if ($refreshToken) {
+                $client->fetchAccessTokenWithRefreshToken($refreshToken);
+                $newAccessToken = $client->getAccessToken();
 
-            // Save the new access token
-            $newToken = $client->getAccessToken();
-            $user->google_token = $newToken['access_token'];
-            $user->save();
-
-            Log::info("Refreshed Google Token for User ID: {$user->id}", $newToken);
+                // Update the user's access token in the database
+                $user->update(['google_token' => json_encode($newAccessToken)]);
+            } else {
+                Log::error("User does not have a valid refresh token.");
+                return;
+            }
         }
 
+        // Create the Indexing API service
         $service = new Google_Service_Indexing($client);
 
-        $postBody = new \Google_Service_Indexing_UrlNotification();
+        // Create the URL notification object
+        $postBody = new Google_Service_Indexing_UrlNotification();
         $postBody->setType("URL_UPDATED");
         $postBody->setUrl($url);
 
         try {
             $service->urlNotifications->publish($postBody);
+            Log::info("Successfully submitted URL: {$url} for indexing.");
         } catch (\Exception $e) {
-            throw new \Exception("Failed to submit URL: {$url} for indexing. Error: {$e->getMessage()}");
+            Log::error("Failed to submit URL: {$url} for indexing. Error: {$e->getMessage()}");
         }
     }
 }
