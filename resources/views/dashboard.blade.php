@@ -82,7 +82,7 @@
                                 @foreach($urls as $url)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="checkbox" class="select-row" name="urls[]" value="{{ $url->page_url }}" {{ $url->inQueue ? 'disabled' : '' }}>
+                                        <input type="checkbox" class="select-row {{ $url->inQueue ? 'disabled-checkbox' : '' }}" name="urls[]" value="{{ $url->page_url }}" {{ $url->inQueue ? 'disabled' : '' }}>
                                     </td>
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
                                         <div class="table-cell-title tooltip-slow" data-tippy-content="{{ $url->page_title ?? 'No Title' }}">
