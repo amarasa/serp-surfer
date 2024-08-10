@@ -20,10 +20,9 @@ class SubmitIndexingJob implements ShouldQueue
 
     public function handle()
     {
-        // Fetch URLs from the index_queue table
-
         Log::info("WORKING: SubmitIndexingJob");
 
+        // Fetch URLs from the index_queue table
         $queuedUrls = IndexQueue::whereNull('requested_index_date')
             ->orWhere('requested_index_date', '<=', now()->subDays(7))
             ->get();
@@ -37,13 +36,15 @@ class SubmitIndexingJob implements ShouldQueue
                 if ($user) {
                     try {
                         // Submit URL to Google Search Console
-                        $this->submitToGSC($queuedUrl->url, $user);
+                        $isSubmitted = $this->submitToGSC($queuedUrl->url, $user);
 
-                        // Update the requested_index_date and increment submission_count
-                        $queuedUrl->update([
-                            'requested_index_date' => now(),
-                            'submission_count' => $queuedUrl->submission_count + 1,
-                        ]);
+                        // Only update the requested_index_date if submission was successful
+                        if ($isSubmitted) {
+                            $queuedUrl->update([
+                                'requested_index_date' => now(),
+                                'submission_count' => $queuedUrl->submission_count + 1,
+                            ]);
+                        }
                     } catch (\Exception $e) {
                         Log::error("Failed to submit URL for indexing: {$queuedUrl->url}. Error: {$e->getMessage()}");
                     }
@@ -56,7 +57,7 @@ class SubmitIndexingJob implements ShouldQueue
         }
     }
 
-    protected function submitToGSC(string $url, User $user)
+    protected function submitToGSC(string $url, User $user): bool
     {
         $client = new Google_Client();
         $client->setApplicationName(env('GOOGLE_APPLICATION_NAME'));
@@ -82,7 +83,7 @@ class SubmitIndexingJob implements ShouldQueue
                 $user->update(['google_token' => json_encode($newAccessToken)]);
             } else {
                 Log::error("User does not have a valid refresh token.");
-                return;
+                return false;
             }
         }
 
@@ -95,10 +96,12 @@ class SubmitIndexingJob implements ShouldQueue
         $postBody->setUrl($url);
 
         try {
-            $service->urlNotifications->publish($postBody);
+            $response = $service->urlNotifications->publish($postBody);
             Log::info("Successfully submitted URL: {$url} for indexing.");
+            return true;
         } catch (\Exception $e) {
             Log::error("Failed to submit URL: {$url} for indexing. Error: {$e->getMessage()}");
+            return false;
         }
     }
 }
