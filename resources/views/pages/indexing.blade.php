@@ -22,7 +22,7 @@
                     @endif
 
                     <div class="mt-6">
-                        <a href="{{ route('dashboard') }}" class="text-blue-600 hover:text-blue-800">
+                        <a href="{{ url()->previous() }}" class="text-blue-600 hover:text-blue-800">
                             Return to Dashboard
                         </a>
                     </div>
