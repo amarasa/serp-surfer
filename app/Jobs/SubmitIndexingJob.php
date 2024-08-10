@@ -21,7 +21,7 @@ class SubmitIndexingJob implements ShouldQueue
     {
         Log::info("WORKING: SubmitIndexingJob");
 
-        // Fetch the URLs from the indexing queue that need to be processed
+
         $indexQueueItems = IndexQueue::where(function ($query) {
             $query->whereNull('requested_index_date')
                 ->orWhere('requested_index_date', '<=', now()->subDays(7));
@@ -32,15 +32,20 @@ class SubmitIndexingJob implements ShouldQueue
 
             if ($user) {
                 try {
-                    $this->submitToGSC($item->url, $user);
+                    // Only submit to GSC if the token is valid
+                    if ($this->isValidToken($user->google_token)) {
+                        $this->submitToGSC($item->url, $user);
 
-                    // Update the requested_index_date to the current timestamp
-                    $item->update([
-                        'requested_index_date' => now(),
-                        'submission_count' => $item->submission_count + 1,
-                    ]);
+                        // Update only if submission to GSC was successful
+                        $item->update([
+                            'requested_index_date' => now(),
+                            'submission_count' => $item->submission_count + 1,
+                        ]);
 
-                    Log::info("URL submitted for indexing: {$item->url}");
+                        Log::info("URL submitted for indexing: {$item->url}");
+                    } else {
+                        Log::error("Invalid token for user ID: {$user->id}");
+                    }
                 } catch (\Exception $e) {
                     Log::error("Failed to submit URL: {$item->url} for indexing. Error: {$e->getMessage()}");
                 }
@@ -50,10 +55,20 @@ class SubmitIndexingJob implements ShouldQueue
         }
     }
 
+    protected function isValidToken($token)
+    {
+        // Assuming the token is a plain string, no JSON parsing needed
+        if (empty($token)) {
+            return false;
+        }
+
+        // Additional token validation logic can be added here if necessary
+        return true;
+    }
+
     protected function submitToGSC($url, User $user)
     {
         $token = $user->google_token;
-
         Log::info("User's Google token: " . $token);
 
         $client = new Google_Client();
@@ -64,17 +79,7 @@ class SubmitIndexingJob implements ShouldQueue
         $client->setAccessType('offline');
         $client->setAccessToken($token);
 
-        // Debug: Check if the token is valid JSON
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            Log::error("Invalid JSON token for user ID: {$user->id}. Error: " . json_last_error_msg());
-            return;
-        }
-
-        // Debug: Fetch and log granted scopes
-        $grantedScopes = $client->getScopes();
-        Log::info("Granted Scopes: " . implode(', ', $grantedScopes));
-
-        // Check if the token is expired, and refresh it if necessary
+        // Check if the token is expired and refresh if necessary
         if ($client->isAccessTokenExpired()) {
             $refreshToken = $user->google_refresh_token;
             Log::info("Refreshing token for user ID: {$user->id}");
@@ -85,8 +90,12 @@ class SubmitIndexingJob implements ShouldQueue
             $user->save();
         }
 
-        // Ensure the necessary scope is granted
         $client->addScope('https://www.googleapis.com/auth/indexing');
+
+        // Log the scopes
+        $scopes = $client->getScopes();
+        Log::info("Scopes for Google Client: " . implode(', ', $scopes));
+
 
         $service = new Google_Service_Indexing($client);
 
