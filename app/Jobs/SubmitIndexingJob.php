@@ -25,6 +25,8 @@ class SubmitIndexingJob implements ShouldQueue
      */
     public function handle()
     {
+        Log::info("WORKING: SubmitIndexingJob");
+
         // Fetch URLs from the index_queue table that meet the criteria
         $now = Carbon::now();
 
