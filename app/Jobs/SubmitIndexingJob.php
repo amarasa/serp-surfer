@@ -4,89 +4,75 @@ namespace App\Jobs;
 
 use App\Models\IndexQueue;
 use App\Models\User;
-use Carbon\Carbon;
-use Google_Client;
-use Google_Service_Indexing;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Google_Client;
+use Google_Service_Indexing;
 
 class SubmitIndexingJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
+    public function __construct()
+    {
+        // You can pass any needed parameters here if required.
+    }
+
     public function handle()
     {
         Log::info("WORKING: SubmitIndexingJob");
 
-        // Fetch URLs from the index_queue table that meet the criteria
-        $now = Carbon::now();
-
-        // Rule 1: If requested_index_date is null
-        $urlsToSubmit = IndexQueue::whereNull('requested_index_date')
-            ->orWhere(function ($query) use ($now) {
-                // Rule 2: If requested_index_date was 7 days ago or more
-                $query->where('requested_index_date', '<=', $now->subDays(7));
-            })
+        // Fetch all URLs from the indexing queue that need to be processed
+        $urls = IndexQueue::whereNull('requested_index_date')
+            ->orWhere('requested_index_date', '<=', now()->subDays(7))
             ->get();
 
-        foreach ($urlsToSubmit as $url) {
-            try {
-                $user = $url->sitemap->user; // Assuming the User model is related to Sitemap
-                $this->submitToGSC($url->url, $user);
+        foreach ($urls as $url) {
+            // Retrieve the sitemap along with its users
+            $sitemap = $url->sitemap()->with('users')->first();
 
-                // Update the requested_index_date and increment submission_count
-                $url->requested_index_date = $now;
-                $url->submission_count++;
-                $url->save();
+            // Ensure there's a sitemap and at least one associated user
+            if ($sitemap && $sitemap->users->isNotEmpty()) {
+                // Use the first associated user for this example
+                $user = $sitemap->users->first();
 
-                Log::info('Submitted URL for indexing: ' . $url->url);
-            } catch (\Exception $e) {
-                Log::error('Failed to submit URL: ' . $url->url . ' Error: ' . $e->getMessage());
+                try {
+                    $this->submitToGSC($url->url, $user);
+
+                    // Update the indexing queue record
+                    $url->update([
+                        'requested_index_date' => now(),
+                        'submission_count' => $url->submission_count + 1,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Failed to submit URL for indexing: {$url->url}", ['error' => $e->getMessage()]);
+                }
+            } else {
+                Log::warning("No user associated with sitemap for URL: {$url->url}");
             }
         }
     }
 
-    /**
-     * Submit the URL to Google Search Console for indexing.
-     *
-     * @param string $url
-     * @param \App\Models\User $user
-     * @return void
-     */
     protected function submitToGSC(string $url, User $user)
     {
+        // Retrieve user's GSC credentials
         $client = new Google_Client();
-        $client->setClientId(config('services.google.client_id'));
-        $client->setClientSecret(config('services.google.client_secret'));
-        $client->setAccessToken($user->google_token); // Assuming you store the OAuth token in the user model
-
-        if ($client->isAccessTokenExpired()) {
-            $client->refreshToken($user->google_refresh_token);
-            $user->google_token = $client->getAccessToken();
-            $user->save();
-        }
+        $client->setAuthConfig($user->gsc_credentials_path); // Assumes you store the path to the user's GSC credentials
+        $client->addScope(Google_Service_Indexing::INDEXING);
 
         $service = new Google_Service_Indexing($client);
 
         $postBody = new \Google_Service_Indexing_UrlNotification();
-        $postBody->setType("URL_UPDATED"); // You can use URL_UPDATED or URL_DELETED depending on your need
+        $postBody->setType("URL_UPDATED");
         $postBody->setUrl($url);
 
-        try {
-            $service->urlNotifications->publish($postBody);
-            Log::info("Successfully submitted $url to Google Search Console.");
-        } catch (\Exception $e) {
-            Log::error("Failed to submit $url to Google Search Console: " . $e->getMessage());
-            throw $e; // Re-throw to handle it in the main try-catch
-        }
+        // Make the request to Google Search Console API
+        $response = $service->urlNotifications->publish($postBody);
+
+        Log::info("Submitted URL to GSC: {$url}", ['response' => $response]);
     }
 }
