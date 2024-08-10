@@ -66,22 +66,17 @@ class SubmitIndexingJob implements ShouldQueue
         $client->setRedirectUri(env('GOOGLE_REDIRECT_URI'));
         $client->setAccessType('offline');
 
-        // Retrieve tokens from the user model
+        // Retrieve the plain token from the user model
         $googleToken = $user->google_token;
         $refreshToken = $user->google_refresh_token;
 
-        Log::info("User's Google token: " . $googleToken);
-
-        // Decode the JSON token
-        $accessToken = json_decode($googleToken, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            Log::error("Invalid JSON token for user ID: {$user->id}. Error: " . json_last_error_msg());
-            return false;
-        }
-
-        // Set the access token on the client
-        $client->setAccessToken($accessToken);
+        // Directly set the access token
+        $client->setAccessToken([
+            'access_token' => $googleToken,
+            'created' => time(),
+            'expires_in' => 3600,  // Set a reasonable expiry time if not provided
+            'token_type' => 'Bearer',
+        ]);
 
         // Check if the access token is expired and refresh it if necessary
         if ($client->isAccessTokenExpired()) {
@@ -90,7 +85,7 @@ class SubmitIndexingJob implements ShouldQueue
                 $newAccessToken = $client->getAccessToken();
 
                 // Update the user's access token in the database
-                $user->update(['google_token' => json_encode($newAccessToken)]);
+                $user->update(['google_token' => $newAccessToken['access_token']]);
             } else {
                 Log::error("User does not have a valid refresh token.");
                 return false;
