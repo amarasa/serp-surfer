@@ -59,20 +59,36 @@ class SubmitIndexingJob implements ShouldQueue
 
     protected function submitToGSC(string $url, User $user)
     {
-        // Retrieve user's GSC credentials
-        $client = new Google_Client();
-        $client->setAuthConfig($user->gsc_credentials_path); // Assumes you store the path to the user's GSC credentials
-        $client->addScope(Google_Service_Indexing::INDEXING);
+        try {
+            // Check if the user has GSC credentials
+            if (!$user->gsc_credentials_path || !file_exists($user->gsc_credentials_path)) {
+                throw new \Exception("GSC credentials not found or invalid for user ID: {$user->id}");
+            }
 
-        $service = new Google_Service_Indexing($client);
+            // Initialize the Google Client
+            $client = new Google_Client();
+            $client->setAuthConfig($user->gsc_credentials_path);
+            $client->addScope(Google_Service_Indexing::INDEXING);
 
-        $postBody = new \Google_Service_Indexing_UrlNotification();
-        $postBody->setType("URL_UPDATED");
-        $postBody->setUrl($url);
+            // Check if the client is correctly authenticated
+            if (!$client->isAccessTokenExpired()) {
+                $client->fetchAccessTokenWithAssertion();
+            }
 
-        // Make the request to Google Search Console API
-        $response = $service->urlNotifications->publish($postBody);
+            $service = new Google_Service_Indexing($client);
 
-        Log::info("Submitted URL to GSC: {$url}", ['response' => $response]);
+            // Prepare the request body
+            $postBody = new \Google_Service_Indexing_UrlNotification();
+            $postBody->setType("URL_UPDATED");
+            $postBody->setUrl($url);
+
+            // Submit to Google Search Console
+            $response = $service->urlNotifications->publish($postBody);
+
+            Log::info("Successfully submitted URL to GSC: {$url}", ['response' => $response]);
+        } catch (\Exception $e) {
+            // Log specific errors to help diagnose the problem
+            Log::error("Failed to submit URL for indexing: {$url}", ['error' => $e->getMessage()]);
+        }
     }
 }
