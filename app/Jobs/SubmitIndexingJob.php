@@ -69,26 +69,20 @@ class SubmitIndexingJob implements ShouldQueue
         // Add the Indexing API scope
         $client->addScope('https://www.googleapis.com/auth/indexing');
 
-
-        // Retrieve the plain token from the user model
         $googleToken = $user->google_token;
         $refreshToken = $user->google_refresh_token;
 
-        // Directly set the access token
         $client->setAccessToken([
             'access_token' => $googleToken,
             'created' => time(),
-            'expires_in' => 3600,  // Set a reasonable expiry time if not provided
+            'expires_in' => 3600,
             'token_type' => 'Bearer',
         ]);
 
-        // Check if the access token is expired and refresh it if necessary
         if ($client->isAccessTokenExpired()) {
             if ($refreshToken) {
                 $client->fetchAccessTokenWithRefreshToken($refreshToken);
                 $newAccessToken = $client->getAccessToken();
-
-                // Update the user's access token in the database
                 $user->update(['google_token' => $newAccessToken['access_token']]);
             } else {
                 Log::error("User does not have a valid refresh token.");
@@ -96,10 +90,8 @@ class SubmitIndexingJob implements ShouldQueue
             }
         }
 
-        // Create the Indexing API service
         $service = new Google_Service_Indexing($client);
 
-        // Create the URL notification object
         $postBody = new Google_Service_Indexing_UrlNotification();
         $postBody->setType("URL_UPDATED");
         $postBody->setUrl($url);
