@@ -86,3 +86,26 @@
 .blink {
     animation: blink 2s infinite;
 }
+
+/* Custom styles for disabled checkboxes */
+.disabled-checkbox {
+    appearance: none; /* Remove default checkbox styling */
+    background-color: black; /* Fill the checkbox with black */
+    width: 16px; /* Set the width of the checkbox */
+    height: 16px; /* Set the height of the checkbox */
+    border: 2px solid black; /* Set border color to match background */
+    border-radius: 3px; /* Add some rounding to the checkbox */
+    position: relative; /* Position relative to add the white dash */
+}
+
+/* Add the white dash */
+.disabled-checkbox::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px; /* Width of the dash */
+    height: 2px; /* Height of the dash */
+    background-color: white; /* Dash color */
+    transform: translate(-50%, -50%); /* Center the dash */
+}
