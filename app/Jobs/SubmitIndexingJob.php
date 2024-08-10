@@ -67,8 +67,18 @@ class SubmitIndexingJob implements ShouldQueue
         $client->setAccessType('offline');
 
         // Retrieve tokens from the user model
-        $accessToken = json_decode($user->google_token, true);
+        $googleToken = $user->google_token;
         $refreshToken = $user->google_refresh_token;
+
+        Log::info("User's Google token: " . $googleToken);
+
+        // Decode the JSON token
+        $accessToken = json_decode($googleToken, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::error("Invalid JSON token for user ID: {$user->id}. Error: " . json_last_error_msg());
+            return false;
+        }
 
         // Set the access token on the client
         $client->setAccessToken($accessToken);
