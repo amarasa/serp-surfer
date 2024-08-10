@@ -64,6 +64,11 @@ class GoogleAuthController extends Controller
                     $token = $newToken;
                 } else {
                     Log::error('Failed to fetch new access token with refresh token.', ['token' => $newToken]);
+
+                    if ($newToken['error'] === 'invalid_grant') {
+                        return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console. Please disconnect and reconnect your account.');
+                    }
+
                     return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console. Could not refresh access token.');
                 }
             }
@@ -80,7 +85,6 @@ class GoogleAuthController extends Controller
                 $user->google_refresh_token = $token['refresh_token'];
             } else {
                 Log::warning('Refresh token not found in token array.', ['token' => $token]);
-                // Refresh token may not always be present, especially if it's not the first time connecting
             }
 
             $user->save();
@@ -90,6 +94,7 @@ class GoogleAuthController extends Controller
 
         return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console.');
     }
+
 
 
 
