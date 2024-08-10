@@ -51,42 +51,9 @@ class GoogleAuthController extends Controller
             $this->client->authenticate($request->get('code'));
             $token = $this->client->getAccessToken();
 
-            // Ensure that the access token contains the correct scope
-            $this->client->setAccessToken($token);
-
-            // Check if the token contains the required scope
-            if ($this->client->isAccessTokenExpired() || !in_array('https://www.googleapis.com/auth/indexing', $this->client->getScopes())) {
-                // If the scope is missing or the token is expired, fetch a new token with the correct scope
-                $newToken = $this->client->fetchAccessTokenWithRefreshToken($token['refresh_token']);
-
-                // Check if new token fetching was successful
-                if (isset($newToken['access_token'])) {
-                    $token = $newToken;
-                } else {
-                    Log::error('Failed to fetch new access token with refresh token.', ['token' => $newToken]);
-
-                    if ($newToken['error'] === 'invalid_grant') {
-                        return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console. Please disconnect and reconnect your account.');
-                    }
-
-                    return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console. Could not refresh access token.');
-                }
-            }
-
             $user = Auth::user();
-            if (isset($token['access_token'])) {
-                $user->google_token = $token['access_token'];
-            } else {
-                Log::error('Access token not found in token array.', ['token' => $token]);
-                return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console. Access token not found.');
-            }
-
-            if (isset($token['refresh_token'])) {
-                $user->google_refresh_token = $token['refresh_token'];
-            } else {
-                Log::warning('Refresh token not found in token array.', ['token' => $token]);
-            }
-
+            $user->google_token = $token['access_token'];
+            $user->google_refresh_token = $token['refresh_token'];
             $user->save();
 
             return redirect()->route('gsc')->with('success', 'Google Search Console connected successfully!');
@@ -94,9 +61,6 @@ class GoogleAuthController extends Controller
 
         return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console.');
     }
-
-
-
 
 
     public function disconnect(Request $request)
@@ -196,8 +160,10 @@ class GoogleAuthController extends Controller
                 // Step 3: Add the URL to the index_queue table
                 $indexQueueEntry = IndexQueue::create([
                     'url' => $url,
-                    'sitemap_id' => $request->input('sitemap_id'),
-                    'submission_count' => 0,
+                    'sitemap_id' => $request->input('sitemap_id'), // Assuming sitemap_id is also provided in the request
+                    'requested_index_date' => now(),
+                    // 'last_scanned_date' => null, // This will be set later when scanned
+                    'submission_count' => 1,
                 ]);
 
                 // Add the successfully added URL to the confirmation list
