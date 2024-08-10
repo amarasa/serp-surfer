@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Schedule;
 use App\Jobs\ProcessQueuedUrl;
 use App\Jobs\AutoScanSitemapsJob;
 use App\Jobs\RemoveOldUrlsJob;
+use App\Jobs\SubmitIndexingJob;
 use App\Jobs\Janitor;
 
 /* 
@@ -41,3 +42,8 @@ Schedule::job(new RemoveOldUrlsJob)->everySixHours();
     This job runs once a minute
 */
 Schedule::job(new Janitor)->everyMinute();
+
+/* 
+    This job is responsible for submitted URLs to GSC for indexing. This should run once every 6 hours
+*/
+Schedule::job(new SubmitIndexingJob)->everyMinute();
