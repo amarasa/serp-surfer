@@ -66,6 +66,10 @@ class SubmitIndexingJob implements ShouldQueue
         $client->setRedirectUri(env('GOOGLE_REDIRECT_URI'));
         $client->setAccessType('offline');
 
+        // Add the Indexing API scope
+        $client->addScope('https://www.googleapis.com/auth/indexing');
+
+
         // Retrieve the plain token from the user model
         $googleToken = $user->google_token;
         $refreshToken = $user->google_refresh_token;
