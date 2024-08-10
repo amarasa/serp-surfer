@@ -51,6 +51,15 @@ class GoogleAuthController extends Controller
             $this->client->authenticate($request->get('code'));
             $token = $this->client->getAccessToken();
 
+            // Ensure that the access token contains the correct scope
+            $this->client->setAccessToken($token);
+
+            // Check if the token contains the required scope
+            if ($this->client->isAccessTokenExpired() || !in_array('https://www.googleapis.com/auth/indexing', $this->client->getScopes())) {
+                // If the scope is missing or the token is expired, fetch a new token with the correct scope
+                $token = $this->client->fetchAccessTokenWithRefreshToken($token['refresh_token']);
+            }
+
             $user = Auth::user();
             $user->google_token = $token['access_token'];
             $user->google_refresh_token = $token['refresh_token'];
@@ -61,6 +70,7 @@ class GoogleAuthController extends Controller
 
         return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console.');
     }
+
 
 
     public function disconnect(Request $request)
