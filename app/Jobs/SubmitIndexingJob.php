@@ -20,9 +20,10 @@ class SubmitIndexingJob implements ShouldQueue
 
     public function handle()
     {
+        // Fetch URLs from the index_queue table
+
         Log::info("WORKING: SubmitIndexingJob");
 
-        // Fetch URLs from the index_queue table
         $queuedUrls = IndexQueue::whereNull('requested_index_date')
             ->orWhere('requested_index_date', '<=', now()->subDays(7))
             ->get();
@@ -31,7 +32,7 @@ class SubmitIndexingJob implements ShouldQueue
             $sitemap = $queuedUrl->sitemap;
 
             if ($sitemap) {
-                $user = $sitemap->users->first(); // Assuming each sitemap belongs to multiple users
+                $user = $sitemap->users->first(); // Get the associated user
 
                 if ($user) {
                     try {
@@ -65,7 +66,7 @@ class SubmitIndexingJob implements ShouldQueue
         $client->setAccessType('offline');
 
         // Retrieve tokens from the user model
-        $accessToken = $user->google_token;
+        $accessToken = json_decode($user->google_token, true);
         $refreshToken = $user->google_refresh_token;
 
         // Set the access token on the client
