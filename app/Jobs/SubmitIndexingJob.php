@@ -79,8 +79,11 @@ class SubmitIndexingJob implements ShouldQueue
             $client->refreshToken($user->google_refresh_token);
 
             // Save the new access token
-            $user->google_token = $client->getAccessToken()['access_token'];
+            $newToken = $client->getAccessToken();
+            $user->google_token = $newToken['access_token'];
             $user->save();
+
+            Log::info("Refreshed Google Token for User ID: {$user->id}", $newToken);
         }
 
         $service = new Google_Service_Indexing($client);
