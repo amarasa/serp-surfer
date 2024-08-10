@@ -57,12 +57,32 @@ class GoogleAuthController extends Controller
             // Check if the token contains the required scope
             if ($this->client->isAccessTokenExpired() || !in_array('https://www.googleapis.com/auth/indexing', $this->client->getScopes())) {
                 // If the scope is missing or the token is expired, fetch a new token with the correct scope
-                $token = $this->client->fetchAccessTokenWithRefreshToken($token['refresh_token']);
+                $newToken = $this->client->fetchAccessTokenWithRefreshToken($token['refresh_token']);
+
+                // Check if new token fetching was successful
+                if (isset($newToken['access_token'])) {
+                    $token = $newToken;
+                } else {
+                    Log::error('Failed to fetch new access token with refresh token.', ['token' => $newToken]);
+                    return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console. Could not refresh access token.');
+                }
             }
 
             $user = Auth::user();
-            $user->google_token = $token['access_token'];
-            $user->google_refresh_token = $token['refresh_token'];
+            if (isset($token['access_token'])) {
+                $user->google_token = $token['access_token'];
+            } else {
+                Log::error('Access token not found in token array.', ['token' => $token]);
+                return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console. Access token not found.');
+            }
+
+            if (isset($token['refresh_token'])) {
+                $user->google_refresh_token = $token['refresh_token'];
+            } else {
+                Log::warning('Refresh token not found in token array.', ['token' => $token]);
+                // Refresh token may not always be present, especially if it's not the first time connecting
+            }
+
             $user->save();
 
             return redirect()->route('gsc')->with('success', 'Google Search Console connected successfully!');
@@ -70,6 +90,7 @@ class GoogleAuthController extends Controller
 
         return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console.');
     }
+
 
 
 
