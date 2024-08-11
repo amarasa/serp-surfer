@@ -66,49 +66,36 @@ class SubmitIndexingJob implements ShouldQueue
         return true;
     }
 
-    protected function submitToGSC($url, User $user)
+    public function submitToGSC($url)
     {
-        $token = $user->google_token;
-        Log::info("User's Google token: " . $token);
+        // Define the available service account keys
+        $keys = [
+            storage_path('keys/serp-surfer-00001.json'),
+            storage_path('keys/serp-surfer-00002.json'),
+        ];
 
+        // Select a key (you can rotate between keys or select based on your own criteria)
+        $serviceAccountPath = $keys[array_rand($keys)]; // Randomly pick a key
+
+        // Initialize Google Client with the selected key
         $client = new Google_Client();
-        $client->setApplicationName(env('GOOGLE_APPLICATION_NAME'));
-        $client->setClientId(env('GOOGLE_CLIENT_ID'));
-        $client->setClientSecret(env('GOOGLE_CLIENT_SECRET'));
-        $client->setRedirectUri(env('GOOGLE_REDIRECT_URI'));
-        $client->setAccessType('offline');
-        $client->setAccessToken($token);
-
-        // Check if the token is expired and refresh if necessary
-        if ($client->isAccessTokenExpired()) {
-            $refreshToken = $user->google_refresh_token;
-            Log::info("Refreshing token for user ID: {$user->id}");
-
-            $client->fetchAccessTokenWithRefreshToken($refreshToken);
-            $newToken = $client->getAccessToken();
-            $user->google_token = $newToken;
-            $user->save();
-        }
-
+        $client->setAuthConfig($serviceAccountPath); // Path to the specific JSON file
         $client->addScope('https://www.googleapis.com/auth/indexing');
 
-        // Log the scopes
-        $scopes = $client->getScopes();
-        Log::info("Scopes for Google Client: " . implode(', ', $scopes));
-
-
+        // Initialize the Indexing API service
         $service = new Google_Service_Indexing($client);
 
-        $notification = new \Google_Service_Indexing_UrlNotification();
-        $notification->setUrl($url);
-        $notification->setType("URL_UPDATED");
+        // Prepare the URL notification
+        $content = new Google_Service_Indexing_UrlNotification();
+        $content->setType('URL_UPDATED');
+        $content->setUrl($url);
 
+        // Attempt to submit the URL
         try {
-            $service->urlNotifications->publish($notification);
-            Log::info("Successfully submitted URL: {$url} for indexing.");
+            $service->urlNotifications->publish($content);
+            Log::info("URL submitted for indexing: $url");
         } catch (\Exception $e) {
-            Log::error("Failed to submit URL: {$url} for indexing. Error: {$e->getMessage()}");
-            throw $e;
+            Log::error("Failed to submit URL: $url for indexing. Error: " . $e->getMessage());
         }
     }
 }
