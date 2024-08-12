@@ -34,7 +34,7 @@
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 @foreach ($workers as $worker)
                 <tr>
-                    <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $worker->worker_name }}</td>
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">{{ $worker->address }}</td>
                     <td class="px-6 py-4 text-sm text-center text-gray-900 dark:text-gray-100">{{ $worker->used }}</td>
                     <td class="px-6 py-4 text-sm text-right">
                         <a href="#" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-600 inline-block">
