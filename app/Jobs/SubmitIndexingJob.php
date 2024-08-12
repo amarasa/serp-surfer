@@ -83,6 +83,10 @@ class SubmitIndexingJob implements ShouldQueue
         $client->setAuthConfig($serviceAccountPath); // Path to the specific JSON file
         $client->addScope('https://www.googleapis.com/auth/indexing');
 
+        // Log the service account email being used
+        $credentials = json_decode(file_get_contents($serviceAccountPath), true);
+        Log::info('Using service account: ' . $credentials['client_email']);
+
         // Initialize the Indexing API service
         $service = new Google_Service_Indexing($client);
 
