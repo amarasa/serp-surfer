@@ -205,10 +205,10 @@ class GoogleAuthController extends Controller
         $client = $this->client;
 
         // Add the necessary scope for managing IAM roles
-        $client->addScope(Google_Service_Iam::CLOUD_PLATFORM);
+        $client->addScope('https://www.googleapis.com/auth/cloud-platform');
 
         // Step 2: Initialize the IAM service
-        $iamService = new Google_Service_Iam($client);
+        $iamService = new Google\Service\Iam($client);
         $projectId = config('google.project_id');
 
         // Step 3: Create a new service account
@@ -217,18 +217,18 @@ class GoogleAuthController extends Controller
 
         $serviceAccount = $iamService->projects_serviceAccounts->create(
             "projects/{$projectId}",
-            new Google_Service_Iam_CreateServiceAccountRequest([
+            new Google\Service\Iam\CreateServiceAccountRequest([
                 'accountId' => $serviceAccountName,
-                'serviceAccount' => [
+                'serviceAccount' => new Google\Service\Iam\ServiceAccount([
                     'displayName' => 'Serp Surfer Indexing Service Account',
-                ],
+                ]),
             ])
         );
 
         // Step 4: Generate and download the JSON key for the new service account
         $key = $iamService->projects_serviceAccounts_keys->create(
             $serviceAccount->getName(),
-            new Google_Service_Iam_CreateServiceAccountKeyRequest([
+            new Google\Service\Iam\CreateServiceAccountKeyRequest([
                 'privateKeyType' => 'TYPE_GOOGLE_CREDENTIALS_FILE',
             ])
         );
@@ -244,7 +244,7 @@ class GoogleAuthController extends Controller
         // Step 6: Attach the service worker to the sitemap
         $sitemap->update([
             'service_worker_address' => $serviceWorker->address,
-            'service_worker_online' => false
+            'service_worker_online' => false,
         ]);
 
         return $serviceWorker;
