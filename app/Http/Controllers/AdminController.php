@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use App\Models\SitemapUrl;
 use App\Models\ServiceWorker;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -142,7 +143,7 @@ class AdminController extends Controller
 
     public function GoogleServiceWorkers()
     {
-        $workers = ServiceWorker::orderBy('name', 'asc')->paginate(12);
+        $workers = ServiceWorker::orderBy('address', 'asc')->paginate(12);
 
         return view('admin.index', compact('workers'));
     }
