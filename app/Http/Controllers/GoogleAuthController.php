@@ -48,19 +48,32 @@ class GoogleAuthController extends Controller
     public function handleGoogleCallback(Request $request)
     {
         if ($request->get('code')) {
+            // Set the necessary scopes, including the Google Indexing API scope
+            $this->client->setScopes([
+                Google_Service_SearchConsole::WEBMASTERS,
+                'https://www.googleapis.com/auth/indexing'
+            ]);
+
+            // Authenticate and get the access token
             $this->client->authenticate($request->get('code'));
             $token = $this->client->getAccessToken();
 
-            $user = Auth::user();
-            $user->google_token = $token['access_token'];
-            $user->google_refresh_token = $token['refresh_token'];
-            $user->save();
+            // Ensure we have the access and refresh tokens
+            if (isset($token['access_token']) && isset($token['refresh_token'])) {
+                $user = Auth::user();
+                $user->google_token = $token['access_token'];
+                $user->google_refresh_token = $token['refresh_token'];
+                $user->save();
 
-            return redirect()->route('gsc')->with('success', 'Google Search Console connected successfully!');
+                return redirect()->route('gsc')->with('success', 'Google Search Console connected successfully!');
+            } else {
+                return redirect()->route('gsc')->with('error', 'Failed to retrieve the necessary tokens from Google.');
+            }
         }
 
         return redirect()->route('gsc')->with('error', 'Failed to connect to Google Search Console.');
     }
+
 
 
     public function disconnect(Request $request)
@@ -161,9 +174,7 @@ class GoogleAuthController extends Controller
                 $indexQueueEntry = IndexQueue::create([
                     'url' => $url,
                     'sitemap_id' => $request->input('sitemap_id'), // Assuming sitemap_id is also provided in the request
-                    'requested_index_date' => now(),
-                    // 'last_scanned_date' => null, // This will be set later when scanned
-                    'submission_count' => 1,
+                    'submission_count' => 0,
                 ]);
 
                 // Add the successfully added URL to the confirmation list
