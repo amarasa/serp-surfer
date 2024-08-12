@@ -12,6 +12,10 @@ use App\Models\IndexQueue;
 use App\Models\ServiceWorker;
 use Illuminate\Support\Facades\Log;
 use Google_Service_Iam;
+use Google\Service\Iam;
+use Google\Service\Iam\Resource\ProjectsServiceAccounts;
+use Google\Service\Iam\ServiceAccount;
+use Google\Service\Iam\CreateServiceAccountRequest;
 
 
 class GoogleAuthController extends Controller
@@ -208,21 +212,22 @@ class GoogleAuthController extends Controller
         $client->addScope('https://www.googleapis.com/auth/cloud-platform');
 
         // Step 2: Initialize the IAM service
-        $iamService = new Google\Service\Iam($client);
+        $iamService = new Iam($client);
         $projectId = config('google.project_id');
 
         // Step 3: Create a new service account
         $serviceAccountName = 'serp-surfer-indexing-' . uniqid();
-        $serviceAccountEmail = "{$serviceAccountName}@{$projectId}.iam.gserviceaccount.com";
+
+        $createServiceAccountRequest = new CreateServiceAccountRequest([
+            'accountId' => $serviceAccountName,
+            'serviceAccount' => new ServiceAccount([
+                'displayName' => 'Serp Surfer Indexing Service Account',
+            ]),
+        ]);
 
         $serviceAccount = $iamService->projects_serviceAccounts->create(
             "projects/{$projectId}",
-            new Google\Service\Iam\CreateServiceAccountRequest([
-                'accountId' => $serviceAccountName,
-                'serviceAccount' => new Google\Service\Iam\ServiceAccount([
-                    'displayName' => 'Serp Surfer Indexing Service Account',
-                ]),
-            ])
+            $createServiceAccountRequest
         );
 
         // Step 4: Generate and download the JSON key for the new service account
@@ -238,13 +243,13 @@ class GoogleAuthController extends Controller
         $serviceWorker = ServiceWorker::create([
             'address' => $serviceAccount->getEmail(),
             'json_key' => $keyData,
-            'used' => 1,
+            'used' => 0,
         ]);
 
         // Step 6: Attach the service worker to the sitemap
         $sitemap->update([
             'service_worker_address' => $serviceWorker->address,
-            'service_worker_online' => false,
+            'service_worker_online' => true, // Assuming the service worker is now online
         ]);
 
         return $serviceWorker;
