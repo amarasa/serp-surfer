@@ -80,10 +80,10 @@ class User extends Authenticatable
             }
         });
 
-        // static::created(function ($user) {
-        //     // Assign the next available service worker
-        //     $user->assignServiceWorker();
-        // });
+        static::created(function ($user) {
+            // Assign the next available service worker
+            $user->assignServiceWorker();
+        });
     }
 
     public function assignServiceWorker()
