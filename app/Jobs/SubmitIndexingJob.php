@@ -71,8 +71,9 @@ class SubmitIndexingJob implements ShouldQueue
     {
         // Define the available service account keys
         $keys = [
-            '/home/forge/serpsurfer.com/resources/keys/serp-surfer-0001.json',
-            '/home/forge/serpsurfer.com/resources/keys/serp-surfer-0002.json',
+            '/home/forge/serpsurfer.com/resources/keys/serp-surfer-00001.json',
+            '/home/forge/serpsurfer.com/resources/keys/serp-surfer-00002.json',
+            '/home/forge/serpsurfer.com/resources/keys/serp-surfer-00003.json',
         ];
 
         // Select a key (you can rotate between keys or select based on your own criteria)
