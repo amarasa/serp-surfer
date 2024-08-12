@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -74,7 +75,7 @@ class User extends Authenticatable
             }
 
             // Decrement the used count for the associated service worker, if any
-            if ($user->serviceWorker) {
+            if ($user->serviceWorker && $user->serviceWorker->used > 0) {
                 $user->serviceWorker->decrement('used');
             }
         });
@@ -100,6 +101,8 @@ class User extends Authenticatable
 
             // Increment the used count for the service worker
             $worker->increment('used');
+        } else {
+            Log::warning('No available service workers to assign to user ID ' . $this->id);
         }
     }
 }
