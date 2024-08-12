@@ -9,8 +9,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\Sitemap;
 use App\Models\IndexQueue;
+use App\Models\ServiceWorker;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
+use Google\Service\Iam as GoogleIam;
+use Google\Service\Iam\Resource\ProjectsServiceAccounts;
+use Google\Service\Iam\ServiceAccount;
+use Google\Service\Iam\Policy;
+use Google\Service\Iam\Binding;
 
 class GoogleAuthController extends Controller
 {
@@ -129,6 +135,17 @@ class GoogleAuthController extends Controller
                 );
 
                 $user->sitemaps()->syncWithoutDetaching($sitemapModel->id);
+
+                // Call the function to create and assign a new service worker
+                $this->createAndAssignServiceWorker($sitemapModel);
+
+                // Assuming `createAndAssignServiceWorker` updates the service worker address in the database
+                if ($sitemapModel->serviceWorker) {
+                    $sitemapModel->update([
+                        'service_worker_address' => $sitemapModel->serviceWorker->address,
+                        'service_worker_online' => true, // Assuming the service worker is online after creation
+                    ]);
+                }
             }
         }
 
@@ -184,5 +201,59 @@ class GoogleAuthController extends Controller
 
         // Step 4: Return the list of submitted URLs to the view
         return view('pages.indexing', ['urls' => $addedUrls]);
+    }
+
+    public function createAndAssignServiceWorker($sitemap)
+    {
+        // Step 1: Initialize the Google Client
+        $client = new GoogleClient();
+        $client->setApplicationName(config('google.application_name'));
+        $client->useApplicationDefaultCredentials();
+        $client->addScope(GoogleIam::CLOUD_PLATFORM);
+
+        // Step 2: Initialize the IAM service
+        $iamService = new GoogleIam($client);
+        $projectId = config('google.project_id');
+
+        // Step 3: Create a new service account
+        $serviceAccountName = 'serp-surfer-indexing-' . uniqid();
+        $serviceAccountEmail = $serviceAccountName . '@' . $projectId . '.iam.gserviceaccount.com';
+
+        $serviceAccount = new ServiceAccount();
+        $serviceAccount->setAccountId($serviceAccountName);
+        $serviceAccount->setDisplayName('Serp Surfer Indexing');
+
+        $createdServiceAccount = $iamService->projects_serviceAccounts->create(
+            'projects/' . $projectId,
+            $serviceAccount
+        );
+
+        // Step 4: Assign the Owner Role
+        $policy = new Policy();
+        $binding = new Binding();
+        $binding->setRole('roles/owner');
+        $binding->setMembers(['serviceAccount:' . $serviceAccountEmail]);
+        $policy->setBindings([$binding]);
+
+        $iamService->projects_serviceAccounts->setIamPolicy(
+            'projects/' . $projectId . '/serviceAccounts/' . $serviceAccountEmail,
+            $policy
+        );
+
+        // Step 5: Generate the JSON key
+        $key = $iamService->projects_serviceAccounts_keys->create(
+            'projects/' . $projectId . '/serviceAccounts/' . $serviceAccountEmail
+        );
+
+        $jsonKey = json_encode($key['privateKeyData']); // Store this in your database
+
+        // Step 6: Store in the service_workers table
+        $worker = ServiceWorker::create([
+            'address' => $serviceAccountEmail,
+            'json_key' => $jsonKey,
+            'used' => 0,
+        ]);
+
+        return $worker;
     }
 }
