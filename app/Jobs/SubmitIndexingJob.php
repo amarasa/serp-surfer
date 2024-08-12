@@ -95,6 +95,12 @@ class SubmitIndexingJob implements ShouldQueue
         try {
             $service->urlNotifications->publish($content);
             Log::info("URL submitted for indexing: $url");
+
+            // Only update the database when the submission is successful
+            IndexQueue::where('url', $url)->update([
+                'requested_index_date' => now(),
+                'submission_count' => \DB::raw('submission_count + 1'),
+            ]);
         } catch (\Exception $e) {
             Log::error("Failed to submit URL: $url for indexing. Error: " . $e->getMessage());
         }
