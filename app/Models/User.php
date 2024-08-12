@@ -32,6 +32,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Sitemap::class)->withTimestamps();
     }
 
+    public function serviceWorker()
+    {
+        return $this->belongsTo(ServiceWorker::class);
+    }
+
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
@@ -66,6 +71,11 @@ class User extends Authenticatable
             foreach ($user->sitemaps as $sitemap) {
                 $sitemap->queuedUrls()->delete();
                 $sitemap->sitemapUrls()->delete();
+            }
+
+            // Decrement the used count for the associated service worker, if any
+            if ($user->serviceWorker) {
+                $user->serviceWorker->decrement('used');
             }
         });
     }

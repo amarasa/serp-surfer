@@ -7,6 +7,7 @@ use App\Models\Sitemap;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use App\Models\SitemapUrl;
+use App\Models\ServiceWorker;
 
 class AdminController extends Controller
 {
@@ -137,5 +138,12 @@ class AdminController extends Controller
             ->get();
 
         return response()->json($sitemaps);
+    }
+
+    public function GoogleServiceWorkers()
+    {
+        $workers = ServiceWorker::orderBy('name', 'asc')->paginate(12);
+
+        return view('admin.index', compact('workers'));
     }
 }
