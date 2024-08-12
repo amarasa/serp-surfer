@@ -57,11 +57,15 @@ class AdminController extends Controller
                 ->with(['urlList' => function ($query) {
                     $query->select('url', 'last_seen'); // Select the relevant columns
                 }])
+                ->withCount(['indexQueue as inQueue' => function ($query) {
+                    $query->whereNull('requested_index_date'); // URLs pending indexing
+                }])
                 ->paginate(12);
         }
 
         return view('admin.index', compact('domains', 'urls', 'selectedDomain'));
     }
+
 
     public function searchUsers(Request $request)
     {
