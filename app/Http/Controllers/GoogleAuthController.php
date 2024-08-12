@@ -205,55 +205,50 @@ class GoogleAuthController extends Controller
 
     public function createAndAssignServiceWorker($sitemap)
     {
-        // Step 1: Initialize the Google Client
-        $client = new GoogleClient();
-        $client->setApplicationName(config('google.application_name'));
-        $client->useApplicationDefaultCredentials();
-        $client->addScope(GoogleIam::CLOUD_PLATFORM);
+        // Step 1: Use the existing Google Client instance
+        $client = $this->client;
+
+        // Add the necessary scope for managing IAM roles
+        $client->addScope(Google_Service_Iam::CLOUD_PLATFORM);
 
         // Step 2: Initialize the IAM service
-        $iamService = new GoogleIam($client);
+        $iamService = new Google_Service_Iam($client);
         $projectId = config('google.project_id');
 
         // Step 3: Create a new service account
         $serviceAccountName = 'serp-surfer-indexing-' . uniqid();
-        $serviceAccountEmail = $serviceAccountName . '@' . $projectId . '.iam.gserviceaccount.com';
+        $serviceAccount = new Google_Service_Iam_ServiceAccount([
+            'accountId' => $serviceAccountName,
+            'displayName' => 'Serp Surfer Indexing Service Account',
+        ]);
 
-        $serviceAccount = new ServiceAccount();
-        $serviceAccount->setAccountId($serviceAccountName);
-        $serviceAccount->setDisplayName('Serp Surfer Indexing');
-
-        $createdServiceAccount = $iamService->projects_serviceAccounts->create(
-            'projects/' . $projectId,
+        $serviceAccount = $iamService->projects_serviceAccounts->create(
+            "projects/{$projectId}",
             $serviceAccount
         );
 
-        // Step 4: Assign the Owner Role
-        $policy = new Policy();
-        $binding = new Binding();
-        $binding->setRole('roles/owner');
-        $binding->setMembers(['serviceAccount:' . $serviceAccountEmail]);
-        $policy->setBindings([$binding]);
-
-        $iamService->projects_serviceAccounts->setIamPolicy(
-            'projects/' . $projectId . '/serviceAccounts/' . $serviceAccountEmail,
-            $policy
-        );
-
-        // Step 5: Generate the JSON key
+        // Step 4: Generate and download the JSON key for the new service account
         $key = $iamService->projects_serviceAccounts_keys->create(
-            'projects/' . $projectId . '/serviceAccounts/' . $serviceAccountEmail
+            $serviceAccount->getName(),
+            new Google_Service_Iam_CreateServiceAccountKeyRequest([
+                'privateKeyType' => 'TYPE_GOOGLE_CREDENTIALS_FILE',
+            ])
         );
 
-        $jsonKey = json_encode($key['privateKeyData']); // Store this in your database
-
-        // Step 6: Store in the service_workers table
-        $worker = ServiceWorker::create([
-            'address' => $serviceAccountEmail,
-            'json_key' => $jsonKey,
-            'used' => 0,
+        // Step 5: Save the JSON key and service account details to the database
+        $keyData = base64_decode($key->getPrivateKeyData());
+        $serviceWorker = ServiceWorker::create([
+            'address' => $serviceAccount->getEmail(),
+            'json_key' => $keyData,
+            'used' => 1,
         ]);
 
-        return $worker;
+        // Step 6: Attach the service worker to the sitemap
+        $sitemap->update([
+            'service_worker_address' => $serviceWorker->address,
+            'service_worker_online' => false,
+        ]);
+
+        return $serviceWorker;
     }
 }
