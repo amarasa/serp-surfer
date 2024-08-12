@@ -11,6 +11,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/privacy-policy', function () {
+    return 'Privacy Policy';
+});
+
+Route::get('/terms', function () {
+    return 'Terms & Conditions';
+});
+
+
+
 Route::middleware('auth', 'checkSuspended')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
