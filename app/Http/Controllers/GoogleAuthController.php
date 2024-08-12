@@ -11,12 +11,8 @@ use App\Models\Sitemap;
 use App\Models\IndexQueue;
 use App\Models\ServiceWorker;
 use Illuminate\Support\Facades\Log;
-use GuzzleHttp\Client;
-use Google\Service\Iam as GoogleIam;
-use Google\Service\Iam\Resource\ProjectsServiceAccounts;
-use Google\Service\Iam\ServiceAccount;
-use Google\Service\Iam\Policy;
-use Google\Service\Iam\Binding;
+use Google_Service_Iam;
+
 
 class GoogleAuthController extends Controller
 {
