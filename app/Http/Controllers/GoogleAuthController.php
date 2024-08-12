@@ -213,14 +213,14 @@ class GoogleAuthController extends Controller
 
         // Step 3: Create a new service account
         $serviceAccountName = 'serp-surfer-indexing-' . uniqid();
-        $serviceAccount = new Google_Service_Iam_ServiceAccount([
-            'accountId' => $serviceAccountName,
-            'displayName' => 'Serp Surfer Indexing Service Account',
-        ]);
-
         $serviceAccount = $iamService->projects_serviceAccounts->create(
             "projects/{$projectId}",
-            $serviceAccount
+            [
+                'accountId' => $serviceAccountName,
+                'serviceAccount' => [
+                    'displayName' => 'Serp Surfer Indexing Service Account',
+                ],
+            ]
         );
 
         // Step 4: Generate and download the JSON key for the new service account
