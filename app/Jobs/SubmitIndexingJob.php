@@ -6,6 +6,7 @@ use App\Models\IndexQueue;
 use App\Models\User;
 use Google_Client;
 use Google_Service_Indexing;
+use Google_Service_Indexing_UrlNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -73,7 +74,6 @@ class SubmitIndexingJob implements ShouldQueue
             '/home/forge/serpsurfer.com/resources/keys/serp-surfer-0001.json',
             '/home/forge/serpsurfer.com/resources/keys/serp-surfer-0002.json',
         ];
-
 
         // Select a key (you can rotate between keys or select based on your own criteria)
         $serviceAccountPath = $keys[array_rand($keys)]; // Randomly pick a key
