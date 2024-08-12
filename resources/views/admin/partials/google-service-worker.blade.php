@@ -2,12 +2,18 @@
     <!-- Form to Add a New Service Worker -->
     <div class="mb-8 bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
         <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4">Add New Service Worker</h3>
-        <form action="#" method="POST" enctype="multipart/form-data">
-            <div class="flex items-center space-x-4">
-                <input type="file" name="service_worker_file" id="service_worker_file" class="border border-gray-300 rounded-lg p-2 dark:bg-gray-700 dark:text-gray-200">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Service Worker</button>
+        <form action="{{ route('add.service.workers') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="mb-4">
+                <label for="json_file" class="block text-sm font-medium text-gray-700">Upload JSON File</label>
+                <input type="file" name="json_file" id="json_file" class="mt-1 block w-full" required>
             </div>
+
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Add Service Worker
+            </button>
         </form>
+
     </div>
 
     <!-- List of Service Workers -->
