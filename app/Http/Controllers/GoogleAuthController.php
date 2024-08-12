@@ -215,12 +215,12 @@ class GoogleAuthController extends Controller
         $serviceAccountName = 'serp-surfer-indexing-' . uniqid();
         $serviceAccount = $iamService->projects_serviceAccounts->create(
             "projects/{$projectId}",
-            [
+            new Google_Service_Iam_CreateServiceAccountRequest([
                 'accountId' => $serviceAccountName,
                 'serviceAccount' => [
                     'displayName' => 'Serp Surfer Indexing Service Account',
                 ],
-            ]
+            ])
         );
 
         // Step 4: Generate and download the JSON key for the new service account
@@ -236,13 +236,13 @@ class GoogleAuthController extends Controller
         $serviceWorker = ServiceWorker::create([
             'address' => $serviceAccount->getEmail(),
             'json_key' => $keyData,
-            'used' => 1,
+            'used' => 0,
         ]);
 
         // Step 6: Attach the service worker to the sitemap
         $sitemap->update([
             'service_worker_address' => $serviceWorker->address,
-            'service_worker_online' => false,
+            'service_worker_online' => true, // Assuming the service worker is now online
         ]);
 
         return $serviceWorker;
