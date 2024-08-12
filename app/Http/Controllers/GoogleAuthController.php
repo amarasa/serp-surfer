@@ -174,9 +174,7 @@ class GoogleAuthController extends Controller
                 $indexQueueEntry = IndexQueue::create([
                     'url' => $url,
                     'sitemap_id' => $request->input('sitemap_id'), // Assuming sitemap_id is also provided in the request
-                    'requested_index_date' => now(),
-                    // 'last_scanned_date' => null, // This will be set later when scanned
-                    'submission_count' => 1,
+                    'submission_count' => 0,
                 ]);
 
                 // Add the successfully added URL to the confirmation list
