@@ -55,6 +55,7 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
 
 
     Route::get('/admin/workers', [AdminController::class, 'GoogleServiceWorkers'])->name('service.workers');
+    Route::post('/admin/workers', [AdminController::class, 'AddGoogleServiceWorkers'])->name('add.service.workers');
 });
 
 //-- tests
