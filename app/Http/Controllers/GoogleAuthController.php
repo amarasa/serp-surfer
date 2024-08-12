@@ -16,7 +16,8 @@ use Google\Service\Iam;
 use Google\Service\Iam\Resource\ProjectsServiceAccounts;
 use Google\Service\Iam\ServiceAccount;
 use Google\Service\Iam\CreateServiceAccountRequest;
-
+use Google\Auth\ApplicationDefaultCredentials;
+use Google\Service\Iam\Resource\ProjectsServiceAccountsKeys;
 
 class GoogleAuthController extends Controller
 {
@@ -203,6 +204,8 @@ class GoogleAuthController extends Controller
         return view('pages.indexing', ['urls' => $addedUrls]);
     }
 
+
+
     public function createAndAssignServiceWorker($sitemap)
     {
         // Step 1: Use the existing Google Client instance
@@ -231,11 +234,14 @@ class GoogleAuthController extends Controller
         );
 
         // Step 4: Generate and download the JSON key for the new service account
-        $key = $iamService->projects_serviceAccounts_keys->create(
+        $projectsServiceAccountsKeys = new ProjectsServiceAccountsKeys($client);
+        $keyRequest = new Google\Service\Iam\CreateServiceAccountKeyRequest([
+            'privateKeyType' => 'TYPE_GOOGLE_CREDENTIALS_FILE',
+        ]);
+
+        $key = $projectsServiceAccountsKeys->create(
             $serviceAccount->getName(),
-            new Google\Service\Iam\CreateServiceAccountKeyRequest([
-                'privateKeyType' => 'TYPE_GOOGLE_CREDENTIALS_FILE',
-            ])
+            $keyRequest
         );
 
         // Step 5: Save the JSON key and service account details to the database
@@ -243,13 +249,13 @@ class GoogleAuthController extends Controller
         $serviceWorker = ServiceWorker::create([
             'address' => $serviceAccount->getEmail(),
             'json_key' => $keyData,
-            'used' => 0,
+            'used' => 1,
         ]);
 
         // Step 6: Attach the service worker to the sitemap
         $sitemap->update([
             'service_worker_address' => $serviceWorker->address,
-            'service_worker_online' => true, // Assuming the service worker is now online
+            'service_worker_online' => false
         ]);
 
         return $serviceWorker;
