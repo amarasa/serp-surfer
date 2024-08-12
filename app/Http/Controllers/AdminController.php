@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use App\Models\SitemapUrl;
 use App\Models\ServiceWorker;
+use App\Models\IndexQueue;
 use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
@@ -57,14 +58,20 @@ class AdminController extends Controller
                 ->with(['urlList' => function ($query) {
                     $query->select('url', 'last_seen'); // Select the relevant columns
                 }])
-                ->withCount(['indexQueue as inQueue' => function ($query) {
-                    $query->whereNull('requested_index_date'); // URLs pending indexing
-                }])
                 ->paginate(12);
+
+            // Check each URL if it is in the index queue
+            foreach ($urls as $url) {
+                $inQueue = IndexQueue::where('url', $url->page_url)->exists();
+
+                // Add a custom attribute to the URL model to indicate if it's in the queue
+                $url->inQueue = $inQueue;
+            }
         }
 
         return view('admin.index', compact('domains', 'urls', 'selectedDomain'));
     }
+
 
 
     public function searchUsers(Request $request)
