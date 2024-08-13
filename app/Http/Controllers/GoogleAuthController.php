@@ -201,12 +201,11 @@ class GoogleAuthController extends Controller
     public function createAndAssignServiceWorker($sitemap)
     {
         $client = new Client();
-        $googleClient = $this->client;
 
-        // Add the necessary scope for managing IAM roles
+        // Assuming you have set up your Google Client correctly and have a valid access token
+        $googleClient = $this->client;
         $googleClient->addScope('https://www.googleapis.com/auth/cloud-platform');
 
-        // Get the OAuth 2.0 token
         if ($googleClient->isAccessTokenExpired()) {
             $googleClient->fetchAccessTokenWithRefreshToken($googleClient->getRefreshToken());
         }
@@ -215,8 +214,8 @@ class GoogleAuthController extends Controller
         $projectId = config('google.project_id');
         $serviceAccountName = 'serp-surfer-indexing-' . uniqid();
 
-        // Step 3: Create the service account using REST API
         try {
+            // Step 1: Create the service account using REST API
             $createServiceAccountUrl = "https://iam.googleapis.com/v1/projects/{$projectId}/serviceAccounts";
             $createServiceAccountResponse = $client->post($createServiceAccountUrl, [
                 'headers' => [
@@ -234,7 +233,7 @@ class GoogleAuthController extends Controller
             $serviceAccountData = json_decode($createServiceAccountResponse->getBody()->getContents(), true);
             $serviceAccountEmail = $serviceAccountData['email'];
 
-            // Step 4: Generate and download the JSON key for the new service account
+            // Step 2: Generate and download the JSON key for the new service account
             $createServiceAccountKeyUrl = "https://iam.googleapis.com/v1/{$serviceAccountData['name']}/keys";
             $createServiceAccountKeyResponse = $client->post($createServiceAccountKeyUrl, [
                 'headers' => [
@@ -249,14 +248,14 @@ class GoogleAuthController extends Controller
             $keyData = json_decode($createServiceAccountKeyResponse->getBody()->getContents(), true);
             $privateKeyData = base64_decode($keyData['privateKeyData']);
 
-            // Step 5: Save the JSON key and service account details to the database
+            // Step 3: Save the JSON key and service account details to the database
             $serviceWorker = ServiceWorker::create([
                 'address' => $serviceAccountEmail,
                 'json_key' => $privateKeyData,
                 'used' => 1,
             ]);
 
-            // Step 6: Attach the service worker to the sitemap
+            // Step 4: Attach the service worker to the sitemap
             $sitemap->update([
                 'service_worker_address' => $serviceWorker->address,
                 'service_worker_online' => false
