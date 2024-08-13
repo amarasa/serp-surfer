@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -30,6 +31,11 @@ class User extends Authenticatable
     public function sitemaps(): BelongsToMany
     {
         return $this->belongsToMany(Sitemap::class)->withTimestamps();
+    }
+
+    public function serviceWorker()
+    {
+        return $this->belongsTo(ServiceWorker::class);
     }
 
     protected $casts = [
@@ -67,6 +73,36 @@ class User extends Authenticatable
                 $sitemap->queuedUrls()->delete();
                 $sitemap->sitemapUrls()->delete();
             }
+
+            // Decrement the used count for the associated service worker, if any
+            if ($user->serviceWorker && $user->serviceWorker->used > 0) {
+                $user->serviceWorker->decrement('used');
+            }
         });
+
+        static::created(function ($user) {
+            // Assign the next available service worker
+            $user->assignServiceWorker();
+        });
+    }
+
+    public function assignServiceWorker()
+    {
+        // Find the next service worker in line
+        $worker = ServiceWorker::orderBy('used', 'asc')
+            ->orderBy('address', 'asc')
+            ->first();
+
+        if ($worker) {
+            // Assign the service worker to the user
+            $this->service_worker_id = $worker->id;
+            $this->service_worker_online = false; // Assuming the service worker isn't online by default
+            $this->save();
+
+            // Increment the used count for the service worker
+            $worker->increment('used');
+        } else {
+            Log::warning('No available service workers to assign to user ID ' . $this->id);
+        }
     }
 }

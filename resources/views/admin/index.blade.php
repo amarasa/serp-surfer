@@ -23,6 +23,9 @@
                     <a href="/horizon" target="_blank" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
                         Horizon
                     </a>
+                    <a href="{{ route('service.workers') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
+                        Google Service Workers
+                    </a>
                 </nav>
             </div>
         </div>
@@ -36,6 +39,8 @@
                 @include('admin.partials.sitemap-list')
                 @elseif (Route::currentRouteName() == 'admin.urls')
                 @include('admin.partials.urls-list')
+                @elseif (Route::currentRouteName() == 'service.workers')
+                @include('admin.partials.google-service-worker')
                 @else
                 <p>Select an option from the menu.</p>
                 @endif

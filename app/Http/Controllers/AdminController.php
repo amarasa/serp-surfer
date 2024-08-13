@@ -7,6 +7,9 @@ use App\Models\Sitemap;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use App\Models\SitemapUrl;
+use App\Models\ServiceWorker;
+use App\Models\IndexQueue;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -56,10 +59,20 @@ class AdminController extends Controller
                     $query->select('url', 'last_seen'); // Select the relevant columns
                 }])
                 ->paginate(12);
+
+            // Check each URL if it is in the index queue
+            foreach ($urls as $url) {
+                $inQueue = IndexQueue::where('url', $url->page_url)->exists();
+
+                // Add a custom attribute to the URL model to indicate if it's in the queue
+                $url->inQueue = $inQueue;
+            }
         }
 
         return view('admin.index', compact('domains', 'urls', 'selectedDomain'));
     }
+
+
 
     public function searchUsers(Request $request)
     {
@@ -137,5 +150,47 @@ class AdminController extends Controller
             ->get();
 
         return response()->json($sitemaps);
+    }
+
+    public function GoogleServiceWorkers()
+    {
+        $workers = ServiceWorker::orderBy('address', 'asc')->paginate(12);
+
+        return view('admin.index', compact('workers'));
+    }
+
+    public function AddGoogleServiceWorkers(Request $request)
+    {
+        // Validate that a file has been uploaded
+        $request->validate([
+            'json_file' => 'required|file|mimes:json',
+        ]);
+
+        // Read the uploaded JSON file
+        $jsonContent = file_get_contents($request->file('json_file')->getRealPath());
+
+        // Decode the JSON content to extract the client_email
+        $jsonDecoded = json_decode($jsonContent, true);
+
+        // Check if the JSON is valid and contains the required key
+        if (json_last_error() === JSON_ERROR_NONE && isset($jsonDecoded['client_email'])) {
+            // Extract the client_email and store it in the address column
+            $clientEmail = $jsonDecoded['client_email'];
+
+            // Store the worker information in the database
+            ServiceWorker::create([
+                'address' => $clientEmail,
+                'json_key' => $jsonContent,
+                'used' => 0,
+            ]);
+
+            Log::info("Service worker {$clientEmail} added successfully.");
+        } else {
+            return redirect()->route('service.workers')->with('error', 'Invalid JSON file or missing client_email.');
+        }
+
+        // Fetch the updated list of workers and return to the view
+        $workers = ServiceWorker::orderBy('address', 'asc')->paginate(12);
+        return view('admin.index', compact('workers'))->with('success', 'Service Worker added successfully.');
     }
 }

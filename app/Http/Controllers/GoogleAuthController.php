@@ -9,8 +9,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\Sitemap;
 use App\Models\IndexQueue;
+use App\Models\ServiceWorker;
 use Illuminate\Support\Facades\Log;
-use GuzzleHttp\Client;
+use Google_Service_Iam;
+use Google\Service\Iam;
+use Google\Service\Iam\Resource\ProjectsServiceAccounts;
+use Google\Service\Iam\ServiceAccount;
+use Google\Service\Iam\CreateServiceAccountRequest;
+use Google\Auth\ApplicationDefaultCredentials;
+use Google\Service\Iam\Resource\ProjectsServiceAccountsKeys;
 
 class GoogleAuthController extends Controller
 {
@@ -129,6 +136,10 @@ class GoogleAuthController extends Controller
                 );
 
                 $user->sitemaps()->syncWithoutDetaching($sitemapModel->id);
+
+                // Call the function to create and assign a new service worker
+                //$this->createAndAssignServiceWorker($sitemapModel);
+
             }
         }
 
@@ -184,5 +195,62 @@ class GoogleAuthController extends Controller
 
         // Step 4: Return the list of submitted URLs to the view
         return view('pages.indexing', ['urls' => $addedUrls]);
+    }
+
+
+
+    public function createAndAssignServiceWorker($sitemap)
+    {
+        // Step 1: Use the existing Google Client instance
+        $client = $this->client;
+
+        // Add the necessary scope for managing IAM roles
+        $client->addScope('https://www.googleapis.com/auth/cloud-platform');
+
+        // Step 2: Initialize the IAM service
+        $iamService = new Iam($client);
+        $projectId = config('google.project_id');
+
+        // Step 3: Create a new service account
+        $serviceAccountName = 'serp-surfer-indexing-' . uniqid();
+
+        $createServiceAccountRequest = new CreateServiceAccountRequest([
+            'accountId' => $serviceAccountName,
+            'serviceAccount' => new ServiceAccount([
+                'displayName' => 'Serp Surfer Indexing Service Account',
+            ]),
+        ]);
+
+        $serviceAccount = $iamService->projects_serviceAccounts->create(
+            "projects/{$projectId}",
+            $createServiceAccountRequest
+        );
+
+        // Step 4: Generate and download the JSON key for the new service account
+        $projectsServiceAccountsKeys = new ProjectsServiceAccountsKeys($client);
+        $keyRequest = new Google\Service\Iam\CreateServiceAccountKeyRequest([
+            'privateKeyType' => 'TYPE_GOOGLE_CREDENTIALS_FILE',
+        ]);
+
+        $key = $projectsServiceAccountsKeys->create(
+            $serviceAccount->getName(),
+            $keyRequest
+        );
+
+        // Step 5: Save the JSON key and service account details to the database
+        $keyData = base64_decode($key->getPrivateKeyData());
+        $serviceWorker = ServiceWorker::create([
+            'address' => $serviceAccount->getEmail(),
+            'json_key' => $keyData,
+            'used' => 1,
+        ]);
+
+        // Step 6: Attach the service worker to the sitemap
+        $sitemap->update([
+            'service_worker_address' => $serviceWorker->address,
+            'service_worker_online' => false
+        ]);
+
+        return $serviceWorker;
     }
 }

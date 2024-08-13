@@ -11,6 +11,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/privacy-policy', function () {
+    return 'Privacy Policy';
+});
+
+Route::get('/terms', function () {
+    return 'Terms & Conditions';
+});
+
+
+
 Route::middleware('auth', 'checkSuspended')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -52,6 +62,10 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
     Route::post('/admin/sitemaps/toggle-auto-scan', [AdminController::class, 'toggleAutoScan'])->name('toggle.auto.scan');
     Route::get('/admin/sitemaps/search', [AdminController::class, 'searchSitemaps'])->name('admin.search.sitemaps');
     Route::post('/admin/sitemaps/{sitemap}/queue', [QueueController::class, 'queueSitemap'])->name('admin.sitemap.queue');
+
+
+    Route::get('/admin/workers', [AdminController::class, 'GoogleServiceWorkers'])->name('service.workers');
+    Route::post('/admin/workers', [AdminController::class, 'AddGoogleServiceWorkers'])->name('add.service.workers');
 });
 
 //-- tests

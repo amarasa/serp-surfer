@@ -277,3 +277,8 @@
         }
     </script>
 </section>
+
+<section id="service-worker" class="mt-8">
+    <p><span class="font-bold">Your Service Worker:</span> <!-- Display the user's assned service worker address here --></p>
+    <p>To enable URL submission for indexing, you must activate a worker in your Google Search Console. To do this, add the provided email address as an Owner to your site's property in Google Search Console.</p>
+</section>

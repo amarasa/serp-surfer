@@ -13,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use App\Models\ServiceWorker;
 
 class SubmitIndexingJob implements ShouldQueue
 {
@@ -69,23 +70,30 @@ class SubmitIndexingJob implements ShouldQueue
 
     public function submitToGSC($url)
     {
-        // Define the available service account keys
-        $keys = [
-            '/home/forge/serpsurfer.com/resources/keys/serp-surfer-00001.json',
-            '/home/forge/serpsurfer.com/resources/keys/serp-surfer-00002.json',
-            '/home/forge/serpsurfer.com/resources/keys/serp-surfer-00003.json',
-        ];
+        // Retrieve the least-used service worker with its JSON key from the database
+        $worker = ServiceWorker::orderBy('used', 'asc')
+            ->orderBy('address', 'asc')
+            ->first();
 
-        // Select a key (you can rotate between keys or select based on your own criteria)
-        $serviceAccountPath = $keys[array_rand($keys)]; // Randomly pick a key
+        if (!$worker) {
+            Log::error("No available service worker found.");
+            return;
+        }
 
-        // Initialize Google Client with the selected key
+        // Decode the JSON key from the database
+        $credentials = json_decode($worker->json_key, true);
+
+        if (!$credentials || !isset($credentials['client_email'])) {
+            Log::error("Invalid service worker credentials.");
+            return;
+        }
+
+        // Initialize Google Client with the JSON key
         $client = new Google_Client();
-        $client->setAuthConfig($serviceAccountPath); // Path to the specific JSON file
+        $client->setAuthConfig($credentials); // Use the decoded JSON credentials array
         $client->addScope('https://www.googleapis.com/auth/indexing');
 
         // Log the service account email being used
-        $credentials = json_decode(file_get_contents($serviceAccountPath), true);
         Log::info('Using service account: ' . $credentials['client_email']);
 
         // Initialize the Indexing API service
@@ -106,6 +114,9 @@ class SubmitIndexingJob implements ShouldQueue
                 'requested_index_date' => now(),
                 'submission_count' => \DB::raw('submission_count + 1'),
             ]);
+
+            // Increment the used count for the service worker
+            $worker->increment('used');
         } catch (\Exception $e) {
             Log::error("Failed to submit URL: $url for indexing. Error: " . $e->getMessage());
         }
