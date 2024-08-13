@@ -11,13 +11,10 @@ use App\Models\Sitemap;
 use App\Models\IndexQueue;
 use App\Models\ServiceWorker;
 use Illuminate\Support\Facades\Log;
-use Google_Service_Iam;
 use Google\Service\Iam;
-use Google\Service\Iam\Resource\ProjectsServiceAccounts;
 use Google\Service\Iam\ServiceAccount;
 use Google\Service\Iam\CreateServiceAccountRequest;
-use Google\Auth\ApplicationDefaultCredentials;
-use Google\Service\Iam\Resource\ProjectsServiceAccountsKeys;
+use Google\Service\Iam\CreateServiceAccountKeyRequest;
 
 class GoogleAuthController extends Controller
 {
@@ -220,14 +217,15 @@ class GoogleAuthController extends Controller
             ]),
         ]);
 
-        $serviceAccount = $iamService->projects_serviceAccounts->create(
+        // Updated way to create a service account
+        $serviceAccount = $iamService->projects->serviceAccounts->create(
             "projects/{$projectId}",
             $createServiceAccountRequest
         );
 
         // Step 4: Generate and download the JSON key for the new service account
-        $projectsServiceAccountsKeys = new ProjectsServiceAccountsKeys($client);
-        $keyRequest = new Google\Service\Iam\CreateServiceAccountKeyRequest([
+        $projectsServiceAccountsKeys = $iamService->projects_serviceAccounts_keys;
+        $keyRequest = new CreateServiceAccountKeyRequest([
             'privateKeyType' => 'TYPE_GOOGLE_CREDENTIALS_FILE',
         ]);
 
