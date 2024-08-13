@@ -218,9 +218,9 @@ class GoogleAuthController extends Controller
             ]),
         ]);
 
-        // Updated way to create a service account
+        // Corrected method call to create a service account
         $serviceAccount = $iamService->projects_serviceAccounts->create(
-            "projects/{$projectId}",
+            "projects/{$projectId}/serviceAccounts",
             $createServiceAccountRequest
         );
 
@@ -230,7 +230,7 @@ class GoogleAuthController extends Controller
         ]);
 
         $key = $iamService->projects_serviceAccounts_keys->create(
-            $serviceAccount->getName(),
+            $serviceAccount->getName() . '/keys',
             $keyRequest
         );
 
