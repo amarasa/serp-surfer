@@ -138,8 +138,7 @@ class GoogleAuthController extends Controller
                 $user->sitemaps()->syncWithoutDetaching($sitemapModel->id);
 
                 // Call the function to create and assign a new service worker
-                //$this->createAndAssignServiceWorker($sitemapModel);
-
+                $this->createAndAssignServiceWorker($sitemapModel);
             }
         }
 
