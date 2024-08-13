@@ -15,6 +15,7 @@ use Google\Service\Iam;
 use Google\Service\Iam\ServiceAccount;
 use Google\Service\Iam\CreateServiceAccountRequest;
 use Google\Service\Iam\CreateServiceAccountKeyRequest;
+use Google\Service\Iam\Resource\ProjectsServiceAccountsKeys;
 
 class GoogleAuthController extends Controller
 {
@@ -218,18 +219,17 @@ class GoogleAuthController extends Controller
         ]);
 
         // Updated way to create a service account
-        $serviceAccount = $iamService->projects->serviceAccounts->create(
+        $serviceAccount = $iamService->projects_serviceAccounts->create(
             "projects/{$projectId}",
             $createServiceAccountRequest
         );
 
         // Step 4: Generate and download the JSON key for the new service account
-        $projectsServiceAccountsKeys = $iamService->projects_serviceAccounts_keys;
         $keyRequest = new CreateServiceAccountKeyRequest([
             'privateKeyType' => 'TYPE_GOOGLE_CREDENTIALS_FILE',
         ]);
 
-        $key = $projectsServiceAccountsKeys->create(
+        $key = $iamService->projects_serviceAccounts_keys->create(
             $serviceAccount->getName(),
             $keyRequest
         );
