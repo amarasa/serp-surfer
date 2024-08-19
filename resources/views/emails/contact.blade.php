@@ -1,4 +1,4 @@
-@component('emails.message')
+@component('vendor.mail.html.message')
 # New Contact Message
 
 You have received a new message from **{{ $name }}** ({{ $email }}).
