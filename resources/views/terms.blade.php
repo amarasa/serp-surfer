@@ -90,31 +90,52 @@
 
             <div class="py-12">
                 <div class="max-w-4xl mx-auto px-4 py-8">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Our Mission</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Terms and Conditions</h2>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">1. Introduction</h2>
                     <p class="text-gray-600 mb-6">
-                        Our mission is to empower webmasters, SEO professionals, and businesses of all sizes by providing them with tools that streamline the often complex process of ensuring their content is visible in Google’s search results. We strive to offer an intuitive and user-friendly experience that saves you time and enhances your digital presence.
+                        Welcome to Serp Surfer. By accessing and using our website and services, you agree to comply with and be bound by the following terms and conditions. Please review these terms carefully. If you do not agree with any of these terms, you should not use our website or services.
                     </p>
 
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">What We Do</h2>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">2. Use of Services</h2>
                     <p class="text-gray-600 mb-6">
-                        Serp Surfer provides an automated way to manage your sitemaps and submit URLs for indexing to Google. Our platform takes care of the heavy lifting, allowing you to focus on creating great content while we ensure that content is discoverable by your audience. From integrating with Google Search Console to managing multiple service accounts, Serp Surfer is your partner in maximizing your online visibility.
+                        Our services are provided for your personal and business use. You agree not to use the services for any illegal or unauthorized purpose. You must not, in the use of the service, violate any laws in your jurisdiction.
                     </p>
 
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Why Choose Us?</h2>
-                    <ol class="list-decimal pl-5 text-gray-600 mb-6">
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Automation:</span> We simplify the process of submitting your URLs for indexing. No more manual submissions or tedious monitoring.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Efficiency:</span> Our platform uses advanced technology to automatically handle the distribution of indexing requests across multiple Google service accounts, optimizing your daily quotas and improving your chances of getting indexed quickly.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Customization:</span> We offer flexible solutions tailored to meet the unique needs of your website or business. Whether you're managing a small blog or a large-scale operation, our tools adapt to your requirements.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Reliability:</span> With our user-friendly dashboard and real-time insights, you can trust Serp Surfer to provide accurate and up-to-date information about the status of your URLs and sitemaps.
-                        </li>
-                    </ol>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">3. Account Registration</h2>
+                    <p class="text-gray-600 mb-6">
+                        To access certain features of our services, you may be required to register an account with us. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete. You are responsible for safeguarding your account credentials and for any activities or actions under your account.
+                    </p>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">4. Intellectual Property</h2>
+                    <p class="text-gray-600 mb-6">
+                        The content, trademarks, service marks, and logos available on our website and through our services are owned by or licensed to Serp Surfer. You are not permitted to copy, reproduce, distribute, or create derivative works based on any of our content without prior written permission from us.
+                    </p>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">5. Limitation of Liability</h2>
+                    <p class="text-gray-600 mb-6">
+                        Serp Surfer is not liable for any direct, indirect, incidental, special, or consequential damages resulting from your use of our services or inability to use our services. This includes, but is not limited to, damages for loss of profits, goodwill, use, data, or other intangible losses.
+                    </p>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">6. Termination</h2>
+                    <p class="text-gray-600 mb-6">
+                        We reserve the right to suspend or terminate your account and access to our services at our sole discretion, without notice or liability, if you breach any of these terms or for any other reason.
+                    </p>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">7. Governing Law</h2>
+                    <p class="text-gray-600 mb-6">
+                        These terms and conditions are governed by and construed in accordance with the laws of the jurisdiction in which Serp Surfer operates, without regard to its conflict of law provisions.
+                    </p>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">8. Changes to Terms</h2>
+                    <p class="text-gray-600 mb-6">
+                        We reserve the right to modify or replace these terms at any time. If a revision is material, we will provide at least 30 days' notice before any new terms take effect. What constitutes a material change will be determined at our sole discretion.
+                    </p>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">9. Contact Us</h2>
+                    <p class="text-gray-600 mb-6">
+                        If you have any questions about these Terms and Conditions, please contact us through our <a href="/contact" class="text-blue-500 hover:text-blue-700">contact page</a>.
+                    </p>
                 </div>
 
             </div>

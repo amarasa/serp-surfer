@@ -68,13 +68,13 @@
 
                     <ul class="mt-6 space-y-4 text-sm">
                         <li>
-                            <a href="#" class="text-gray-700 transition hover:opacity-75"> Accessibility </a>
+                            <a href="/accessibility" class="text-gray-700 transition hover:opacity-75"> Accessibility </a>
                         </li>
                         <li>
                             <a href="/privacy-policy" class="text-gray-700 transition hover:opacity-75"> Privacy Policy </a>
                         </li>
                         <li>
-                            <a href="#" class="text-gray-700 transition hover:opacity-75"> Terms & Conditions </a>
+                            <a href="/terms" class="text-gray-700 transition hover:opacity-75"> Terms & Conditions </a>
                         </li>
                     </ul>
                 </div>

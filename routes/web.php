@@ -16,11 +16,14 @@ Route::get('/privacy-policy', function () {
 });
 
 Route::get('/terms', function () {
-    return 'Terms & Conditions';
+    return view('terms');
 });
 
 Route::get('/about', function () {
     return view('about');
+});
+Route::get('/accessibility', function () {
+    return view('accessibility');
 });
 
 

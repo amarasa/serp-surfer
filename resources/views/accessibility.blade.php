@@ -90,31 +90,37 @@
 
             <div class="py-12">
                 <div class="max-w-4xl mx-auto px-4 py-8">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Our Mission</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Accessibility Statement</h2>
+
                     <p class="text-gray-600 mb-6">
-                        Our mission is to empower webmasters, SEO professionals, and businesses of all sizes by providing them with tools that streamline the often complex process of ensuring their content is visible in Google’s search results. We strive to offer an intuitive and user-friendly experience that saves you time and enhances your digital presence.
+                        At Serp Surfer, we are committed to ensuring digital accessibility for people with disabilities. We are continually improving the user experience for everyone and applying the relevant accessibility standards to ensure our website and services are accessible to all users.
                     </p>
 
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">What We Do</h2>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Our Commitment</h2>
                     <p class="text-gray-600 mb-6">
-                        Serp Surfer provides an automated way to manage your sitemaps and submit URLs for indexing to Google. Our platform takes care of the heavy lifting, allowing you to focus on creating great content while we ensure that content is discoverable by your audience. From integrating with Google Search Console to managing multiple service accounts, Serp Surfer is your partner in maximizing your online visibility.
+                        We strive to make our website and services as accessible as possible by adhering to the Web Content Accessibility Guidelines (WCAG) 2.1. These guidelines outline ways to make web content more accessible for people with disabilities and user-friendly for everyone.
                     </p>
 
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Why Choose Us?</h2>
-                    <ol class="list-decimal pl-5 text-gray-600 mb-6">
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Automation:</span> We simplify the process of submitting your URLs for indexing. No more manual submissions or tedious monitoring.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Efficiency:</span> Our platform uses advanced technology to automatically handle the distribution of indexing requests across multiple Google service accounts, optimizing your daily quotas and improving your chances of getting indexed quickly.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Customization:</span> We offer flexible solutions tailored to meet the unique needs of your website or business. Whether you're managing a small blog or a large-scale operation, our tools adapt to your requirements.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Reliability:</span> With our user-friendly dashboard and real-time insights, you can trust Serp Surfer to provide accurate and up-to-date information about the status of your URLs and sitemaps.
-                        </li>
-                    </ol>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Accessibility Features</h2>
+                    <p class="text-gray-600 mb-6">
+                        To enhance accessibility, we have implemented several features across our website:
+                    </p>
+                    <ul class="list-disc list-inside text-gray-600 mb-6">
+                        <li>Text alternatives for non-text content</li>
+                        <li>Keyboard navigation for all interactive elements</li>
+                        <li>Responsive design to ensure compatibility with screen readers and other assistive technologies</li>
+                        <li>Consistent structure and design patterns for ease of use</li>
+                    </ul>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Ongoing Efforts</h2>
+                    <p class="text-gray-600 mb-6">
+                        We recognize that accessibility is an ongoing effort. We are constantly working to ensure that all aspects of our website and services are fully accessible. If you encounter any barriers or have suggestions for improving accessibility, we encourage you to reach out to us.
+                    </p>
+
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Contact Us</h2>
+                    <p class="text-gray-600 mb-6">
+                        If you experience any difficulty accessing any part of our website or have questions about our accessibility efforts, please don't hesitate to <a href="/contact" class="text-blue-500 hover:text-blue-700">contact us</a>. Your feedback is invaluable in helping us improve our accessibility.
+                    </p>
                 </div>
 
             </div>
