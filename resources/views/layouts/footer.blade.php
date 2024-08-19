@@ -71,7 +71,7 @@
                             <a href="#" class="text-gray-700 transition hover:opacity-75"> Accessibility </a>
                         </li>
                         <li>
-                            <a href="#" class="text-gray-700 transition hover:opacity-75"> Privacy Policy </a>
+                            <a href="/privacy-policy" class="text-gray-700 transition hover:opacity-75"> Privacy Policy </a>
                         </li>
                         <li>
                             <a href="#" class="text-gray-700 transition hover:opacity-75"> Terms & Conditions </a>
