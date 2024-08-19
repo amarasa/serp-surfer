@@ -28,6 +28,6 @@ class AppServiceProvider extends ServiceProvider
         Route::aliasMiddleware('role', \App\Http\Middleware\RoleMiddleware::class);
         Route::aliasMiddleware('checkSuspended', CheckSuspended::class);
         Route::aliasMiddleware('checkPasswordReset', CheckPasswordReset::class);
-        Blade::component('mail::message', 'message');
+        view()->addNamespace('mail', resource_path('views/vendor/mail'));
     }
 }
