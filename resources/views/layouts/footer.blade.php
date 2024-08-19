@@ -58,7 +58,7 @@
                             <a href="/about" class="text-gray-700 transition hover:opacity-75"> About </a>
                         </li>
                         <li>
-                            <a href="#" class="text-gray-700 transition hover:opacity-75"> Contact </a>
+                            <a href="/contact" class="text-gray-700 transition hover:opacity-75"> Contact </a>
                         </li>
                     </ul>
                 </div>
