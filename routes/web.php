@@ -6,6 +6,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\UrlsController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ContactController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,9 +23,15 @@ Route::get('/terms', function () {
 Route::get('/about', function () {
     return view('about');
 });
+
 Route::get('/accessibility', function () {
     return view('accessibility');
 });
+
+Route::get('/contact', function () {
+    return view('contact');
+});
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 
 

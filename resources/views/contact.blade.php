@@ -27,15 +27,13 @@
         @include('layouts.navigation')
         @include('layouts.header')
 
-
-
         <!-- Page Content -->
         <main>
             @if (session('info'))
             <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition.opacity.duration.500ms @click="show = false" class="fixed top-4 right-4 max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-neutral-800 dark:border-neutral-700" role="alert">
                 <div class="flex p-4">
                     <div class="flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#3fa7d6" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#3fa7d6" viewBox="0 0 512 512">
                             <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
                         </svg>
                     </div>
@@ -69,7 +67,7 @@
             <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" x-transition.opacity.duration.500ms @click="show = false" class="fixed top-4 right-4 max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-neutral-800 dark:border-neutral-700" role="alert">
                 <div class="flex p-4">
                     <div class="flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ef233c" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ef233c" viewBox="0 0 512 512">
                             <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z" />
                         </svg>
                     </div>
@@ -90,31 +88,30 @@
 
             <div class="py-12">
                 <div class="max-w-4xl mx-auto px-4 py-8">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Our Mission</h2>
-                    <p class="text-gray-600 mb-6">
-                        Our mission is to empower webmasters, SEO professionals, and businesses of all sizes by providing them with tools that streamline the often complex process of ensuring their content is visible in Google’s search results. We strive to offer an intuitive and user-friendly experience that saves you time and enhances your digital presence.
-                    </p>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Contact</h2>
+                    <form action="{{ route('contact.submit') }}" method="POST">
+                        @csrf
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                            <input type="text" name="name" id="name" required class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
 
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">What We Do</h2>
-                    <p class="text-gray-600 mb-6">
-                        Serp Surfer provides an automated way to manage your sitemaps and submit URLs for indexing to Google. Our platform takes care of the heavy lifting, allowing you to focus on creating great content while we ensure that content is discoverable by your audience. From integrating with Google Search Console to managing multiple service accounts, Serp Surfer is your partner in maximizing your online visibility.
-                    </p>
+                        <div class="mb-4">
+                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                            <input type="email" name="email" id="email" required class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
 
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Why Choose Us?</h2>
-                    <ol class="list-decimal list-inside text-gray-600 mb-6">
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Automation:</span> We simplify the process of submitting your URLs for indexing. No more manual submissions or tedious monitoring.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Efficiency:</span> Our platform uses advanced technology to automatically handle the distribution of indexing requests across multiple Google service accounts, optimizing your daily quotas and improving your chances of getting indexed quickly.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Customization:</span> We offer flexible solutions tailored to meet the unique needs of your website or business. Whether you're managing a small blog or a large-scale operation, our tools adapt to your requirements.
-                        </li>
-                        <li class="mb-2">
-                            <span class="font-bold text-gray-800">Reliability:</span> With our user-friendly dashboard and real-time insights, you can trust Serp Surfer to provide accurate and up-to-date information about the status of your URLs and sitemaps.
-                        </li>
-                    </ol>
+                        <div class="mb-4">
+                            <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
+                            <textarea name="message" id="message" rows="4" required class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                        </div>
+
+                        <div class="mt-6">
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Send Message
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
             </div>
@@ -122,8 +119,6 @@
     </div>
 
     @include('layouts.footer')
-
-
 </body>
 
 </html>
