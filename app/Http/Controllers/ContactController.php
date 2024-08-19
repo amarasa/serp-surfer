@@ -18,7 +18,7 @@ class ContactController extends Controller
         // Send the email using Postmark with a Blade view
         Mail::send('emails.contact', ['name' => $data['name'], 'email' => $data['email'], 'messageContent' => $data['message']], function ($message) use ($data) {
             $message->from($data['email'], $data['name'])
-                ->to('angelo.marasa@hrefcreative.com') // Replace with your email
+                ->to('angelo.marasa@hrefcreative.com')
                 ->subject('SERP Surfer - Contact Request');
         });
 
