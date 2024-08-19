@@ -12,7 +12,7 @@ Route::get('/', function () {
 });
 
 Route::get('/privacy-policy', function () {
-    return 'Privacy Policy';
+    return view('privacy');
 });
 
 Route::get('/terms', function () {
