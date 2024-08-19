@@ -25,7 +25,7 @@
 
                 <ul class="mt-8 flex gap-6">
                     <li>
-                        <a href="#" rel="noreferrer" target="_blank" class="text-gray-700 transition hover:opacity-75">
+                        <a href="https://www.linkedin.com/in/angelo-marasa-b5426992/" rel="noreferrer" target="_blank" class="text-gray-700 transition hover:opacity-75">
                             <span class="sr-only">LinkedIn</span>
 
 
@@ -36,7 +36,7 @@
                     </li>
 
                     <li>
-                        <a href="#" rel="noreferrer" target="_blank" class="text-gray-700 transition hover:opacity-75">
+                        <a href="https://github.com/amarasa/" rel="noreferrer" target="_blank" class="text-gray-700 transition hover:opacity-75">
                             <span class="sr-only">GitHub</span>
 
                             <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -48,30 +48,15 @@
             </div>
 
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
-                <div>
-                    <p class="font-medium text-gray-900">Column Heading</p>
 
-                    <ul class="mt-6 space-y-4 text-sm">
-                        <li>
-                            <a href="#" class="text-gray-700 transition hover:opacity-75"> Something </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <p class="font-medium text-gray-900">Column Heading</p>
-
-                    <ul class="mt-6 space-y-4 text-sm">
-                        <li>
-                            <a href="#" class="text-gray-700 transition hover:opacity-75"> About </a>
-                        </li>
-                    </ul>
-                </div>
 
                 <div>
                     <p class="font-medium text-gray-900">Helpful Links</p>
 
                     <ul class="mt-6 space-y-4 text-sm">
+                        <li>
+                            <a href="/about" class="text-gray-700 transition hover:opacity-75"> About </a>
+                        </li>
                         <li>
                             <a href="#" class="text-gray-700 transition hover:opacity-75"> Contact </a>
                         </li>
