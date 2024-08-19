@@ -19,6 +19,10 @@ Route::get('/terms', function () {
     return 'Terms & Conditions';
 });
 
+Route::get('/about', function () {
+    return view('about');
+});
+
 
 
 Route::middleware('auth', 'checkSuspended')->group(function () {
