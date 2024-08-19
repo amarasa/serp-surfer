@@ -1,4 +1,4 @@
-@component('mail::message')
+@component('emails.message')
 # New Contact Message
 
 You have received a new message from **{{ $name }}** ({{ $email }}).
