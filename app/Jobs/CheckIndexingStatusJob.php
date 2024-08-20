@@ -31,9 +31,9 @@ class CheckIndexingStatusJob implements ShouldQueue
 
         $indexQueueItems = IndexQueue::where(function ($query) {
             $query->where('requested_index_date', '<=', now()->subHours(24))
-                ->whereNull('last_scan_date')
+                ->whereNull('last_scanned_date')
                 ->orWhere(function ($query) {
-                    $query->where('last_scan_date', '<=', now()->subHours(24));
+                    $query->where('last_scanned_date', '<=', now()->subHours(24));
                 });
         })->get();
 
@@ -73,10 +73,10 @@ class CheckIndexingStatusJob implements ShouldQueue
                     Log::info("URL is indexed and removed from queue: {$url}");
                 } else {
                     $item->update([
-                        'last_scan_date' => now(),
+                        'last_scanned_date' => now(),
                     ]);
 
-                    Log::info("URL not indexed, updated last_scan_date: {$url}");
+                    Log::info("URL not indexed, updated last_scanned_date: {$url}");
                 }
             } catch (RequestException $e) {
                 Log::error("Error processing URL: {$url}. Error: {$e->getMessage()}");
