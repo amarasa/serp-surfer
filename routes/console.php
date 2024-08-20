@@ -53,4 +53,4 @@ Schedule::job(new SubmitIndexingJob)->everyMinute();
     This job is responsible for scanning URLs in the index_queue to see if they've been indexed, so we can update the status and trigger an email.
     This should be set to every 1 hour after testing
 */
-//Schedule::job(new CheckIndexingStatusJob)->everyMinute();
+Schedule::job(new CheckIndexingStatusJob)->everyMinute();

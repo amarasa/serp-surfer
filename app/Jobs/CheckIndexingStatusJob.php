@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Mail\IndexingSuccessNotification;
 use App\Models\IndexQueue;
 use App\Models\SitemapUrl;
 use GuzzleHttp\Client;
@@ -12,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\DomCrawler\Crawler;
 
 class CheckIndexingStatusJob implements ShouldQueue
@@ -27,7 +29,6 @@ class CheckIndexingStatusJob implements ShouldQueue
     {
         Log::info("WORKING: CheckIndexingStatusJob");
 
-        // Fetch entries from IndexQueue that need to be checked
         $indexQueueItems = IndexQueue::where(function ($query) {
             $query->where('requested_index_date', '<=', now()->subHours(24))
                 ->whereNull('last_scan_date')
@@ -36,17 +37,17 @@ class CheckIndexingStatusJob implements ShouldQueue
                 });
         })->get();
 
-        // Loop through each item
         foreach ($indexQueueItems as $item) {
             $url = $item->url;
             $sitemapId = $item->sitemap_id;
+            $submissionCount = $item->submission_count;
+            $user = $item->sitemap->users->first(); // Assuming the first user is associated with the sitemap
 
             Log::info("Checking indexing status for URL: {$url}");
 
             try {
                 $client = new Client();
 
-                // Google search query to check indexing
                 $googleSearchUrl = "https://www.google.com/search?q=site:" . urlencode($url);
                 $response = $client->get($googleSearchUrl, [
                     'headers' => [
@@ -58,20 +59,19 @@ class CheckIndexingStatusJob implements ShouldQueue
                 $isIndexed = $crawler->filter('#search .g')->count() > 0;
 
                 if ($isIndexed) {
-                    // Update the sitemap URL with the indexing status
                     SitemapUrl::where('page_url', $url)->update([
                         'index_status' => true,
                     ]);
 
-                    // Remove the item from the IndexQueue
-                    $item->delete();
+                    // Send email notification before deleting the queue item
+                    if ($user && $user->email) {
+                        Mail::to($user->email)->send(new IndexingSuccessNotification($url, $submissionCount));
+                    }
 
-                    // Placeholder for email notification logic
-                    // TODO: Trigger email notification here for successful indexing
+                    $item->delete();
 
                     Log::info("URL is indexed and removed from queue: {$url}");
                 } else {
-                    // Update the last_scan_date if not indexed
                     $item->update([
                         'last_scan_date' => now(),
                     ]);
