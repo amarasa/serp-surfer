@@ -178,12 +178,15 @@
         Swal.fire({
             title: 'Are you sure?',
             html: `
-            <p id="alert-text">This action will look for new sitemaps. Your existing sitemaps and data will remain.</p>
-            <div class="custom-control custom-switch mt-3">
-                <input type="checkbox" class="custom-control-input" id="overwriteSwitch">
-                <label class="custom-control-label" for="overwriteSwitch">Overwrite existing data?</label>
-            </div>
-        `,
+            <p id="alert-text" class="text-gray-700">This action will look for new sitemaps. Your existing sitemaps and data will remain. To clear your existing data, toggle below.</p>
+                <div class="flex items-center mt-3">
+                    <label for="overwriteSwitch" class="mr-3 text-gray-700">Overwrite existing data?</label>
+                    <div class="relative">
+                        <input type="checkbox" id="overwriteSwitch" class="sr-only">
+                        <div class="block bg-gray-200 w-14 h-8 rounded-full"></div>
+                        <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform"></div>
+                    </div>
+                </div>`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -206,18 +209,6 @@
 
                 // Submit the form
                 document.getElementById('resync-form').submit();
-            }
-        });
-
-        // Listen for changes on the toggle switch and update the text accordingly
-        document.addEventListener('change', function(event) {
-            if (event.target && event.target.id === 'overwriteSwitch') {
-                const alertText = document.getElementById('alert-text');
-                if (event.target.checked) {
-                    alertText.textContent = `By re-syncing your sitemaps, your already processed data will be removed from ${config('app.name')} and will need to be re-processed.`;
-                } else {
-                    alertText.textContent = `This action will look for new sitemaps. Your existing sitemaps and data will remain.`;
-                }
             }
         });
     }
