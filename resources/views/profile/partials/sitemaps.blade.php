@@ -9,6 +9,7 @@
                 @if(auth()->user()->sitemaps()->count() > 0)
             <form id="resync-form" method="POST" action="{{ route('sitemaps.resync') }}">
                 @csrf
+                <input type="hidden" id="overwrite-input" name="overwrite" value="0">
                 <button type="button" class="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 dark:hover:bg-blue-500 focus:bg-blue-500 dark:focus:bg-blue-500 active:bg-blue-700 dark:active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150" onclick="confirmResync()">
                     Re-sync Sitemaps
                 </button>
@@ -176,16 +177,47 @@
     function confirmResync() {
         Swal.fire({
             title: 'Are you sure?',
-            text: `By re-syncing your sitemaps, your already processed data will be removed from {{ config('app.name') }} and will need to be re-processed.`,
+            html: `
+            <p id="alert-text">This action will look for new sitemaps. Your existing sitemaps and data will remain.</p>
+            <div class="custom-control custom-switch mt-3">
+                <input type="checkbox" class="custom-control-input" id="overwriteSwitch">
+                <label class="custom-control-label" for="overwriteSwitch">Overwrite existing data?</label>
+            </div>
+        `,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, re-sync it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
+            cancelButtonText: 'Cancel',
+            preConfirm: () => {
+                // Get the state of the toggle switch
+                const isOverwrite = document.getElementById('overwriteSwitch').checked;
+
+                // Include the toggle state in the form data if it's toggled on
+                if (isOverwrite) {
+                    const form = document.getElementById('resync-form');
+                    let input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'overwrite';
+                    input.value = '1'; // Or any value that indicates the data should be overwritten
+                    form.appendChild(input);
+                }
+
+                // Submit the form
                 document.getElementById('resync-form').submit();
+            }
+        });
+
+        // Listen for changes on the toggle switch and update the text accordingly
+        document.addEventListener('change', function(event) {
+            if (event.target && event.target.id === 'overwriteSwitch') {
+                const alertText = document.getElementById('alert-text');
+                if (event.target.checked) {
+                    alertText.textContent = `By re-syncing your sitemaps, your already processed data will be removed from ${config('app.name')} and will need to be re-processed.`;
+                } else {
+                    alertText.textContent = `This action will look for new sitemaps. Your existing sitemaps and data will remain.`;
+                }
             }
         });
     }

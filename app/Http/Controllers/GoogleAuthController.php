@@ -145,27 +145,34 @@ class GoogleAuthController extends Controller
         return redirect()->route('gsc')->with('success', 'Sitemaps Synced!');
     }
 
-    public function resyncSitemaps()
+    public function resyncSitemaps(Request $request)
     {
         $user = Auth::user();
 
-        // Get all sitemap IDs associated with the user
-        $sitemapIds = $user->sitemaps()->pluck('sitemap_id');
+        // Check if 'overwrite' is true
+        $overwrite = $request->input('overwrite', false); // Default to false if 'overwrite' is not provided
 
-        // Detach user from sitemaps
-        $user->sitemaps()->detach();
+        if ($overwrite) {
+            // Get all sitemap IDs associated with the user
+            $sitemapIds = $user->sitemaps()->pluck('sitemap_id');
 
-        // Delete entries in url_list associated with the detached sitemaps
-        \App\Models\UrlList::whereIn('sitemap_id', $sitemapIds)->delete();
+            // Detach user from sitemaps
+            $user->sitemaps()->detach();
 
-        // Delete sitemaps that are no longer associated with any user
-        Sitemap::whereNotIn('id', function ($query) {
-            $query->select('sitemap_id')
-                ->from('sitemap_user');
-        })->delete();
+            // Delete entries in url_list associated with the detached sitemaps
+            \App\Models\UrlList::whereIn('sitemap_id', $sitemapIds)->delete();
 
+            // Delete sitemaps that are no longer associated with any user
+            Sitemap::whereNotIn('id', function ($query) {
+                $query->select('sitemap_id')
+                    ->from('sitemap_user');
+            })->delete();
+        }
+
+        // Continue with syncing sitemaps, regardless of whether 'overwrite' is true or false
         return $this->syncSitemaps();
     }
+
 
     public function submitIndexList(Request $request)
     {
