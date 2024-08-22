@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 
 class BugReportMail extends Mailable
 {
@@ -43,6 +44,7 @@ class BugReportMail extends Mailable
 
 
         $email = $this->from($this->email)
+            ->to(env('BUG_REPORT_EMAIL'))  // Ensure this is correctly set
             ->subject('Bug Report Submission')
             ->view('emails.bug_report')
             ->with([
@@ -50,15 +52,11 @@ class BugReportMail extends Mailable
                 'messageContent' => $this->message,
             ]);
 
-        // Attach the first file only, if it exists and is valid
         if ($this->attachment instanceof UploadedFile) {
-            \Log::info('Attaching file:', ['name' => $this->attachment->getClientOriginalName()]);
             $email->attach($this->attachment->getRealPath(), [
                 'as' => $this->attachment->getClientOriginalName(),
                 'mime' => $this->attachment->getMimeType(),
             ]);
-        } else {
-            \Log::error('No valid file to attach', ['attachment' => $this->attachment]);
         }
 
         return $email;
