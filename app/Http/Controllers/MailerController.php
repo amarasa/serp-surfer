@@ -14,7 +14,7 @@ class MailerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'message' => 'required|string',
-            'screenshots.*' => 'nullable|file|mimes:jpg,png,jpeg,gif,pdf|max:10240',
+            'screenshots.*' => 'nullable|file|mimes:jpg,png,jpeg,gif,pdf|max:51200',
         ]);
 
         $name = $request->input('name');
