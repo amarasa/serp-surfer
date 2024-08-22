@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+.logo {
+    font-family: "Spectral", serif;
+    font-weight: 700; /* Adjust weight to make it bold or regular as needed */
+    font-size: 24px; /* Adjust size as needed */
+    color: #333; /* Adjust color as needed */
+}
+
 .loading-spinner-container {
     display: flex;
     align-items: center;
