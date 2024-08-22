@@ -39,6 +39,9 @@ class BugReportMail extends Mailable
      */
     public function build()
     {
+        Log::info('BUG_REPORT_EMAIL: ' . env('BUG_REPORT_EMAIL'));
+
+
         $email = $this->from($this->email)
             ->subject('Bug Report Submission')
             ->view('emails.bug_report')
