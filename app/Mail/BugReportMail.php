@@ -44,7 +44,8 @@ class BugReportMail extends Mailable
 
 
         $email = $this->from($this->email)
-            ->to(env('BUG_REPORT_EMAIL'))  // Ensure this is correctly set
+            ->to('angelo.marasa@hrefcreative.com')  // Ensure this is correctly set
+            //  ->to(env('BUG_REPORT_EMAIL'))  // Ensure this is correctly set
             ->subject('Bug Report Submission')
             ->view('emails.bug_report')
             ->with([
