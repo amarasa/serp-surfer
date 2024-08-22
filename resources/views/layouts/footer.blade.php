@@ -19,8 +19,7 @@
                 </div>
 
                 <p class="mt-4 max-w-xs text-gray-500">
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse non cupiditate quae nam
-                    molestias.
+                    SERP Surfer is a web application designed to help you monitor and analyze search engine results pages (SERPs) efficiently, providing valuable insights into search rankings and trends.
                 </p>
 
                 <ul class="mt-8 flex gap-6">
