@@ -212,4 +212,15 @@
             }
         });
     }
+
+    document.getElementById('overwriteSwitch').addEventListener('change', function(event) {
+        const dot = event.target.nextElementSibling.nextElementSibling;
+        if (event.target.checked) {
+            dot.classList.add('translate-x-6');
+            dot.classList.remove('translate-x-0');
+        } else {
+            dot.classList.add('translate-x-0');
+            dot.classList.remove('translate-x-6');
+        }
+    });
 </script>
