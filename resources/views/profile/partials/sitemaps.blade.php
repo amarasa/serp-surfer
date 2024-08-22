@@ -179,35 +179,16 @@
             title: 'Are you sure?',
             html: `
             <p id="alert-text" class="text-gray-700">This action will look for new sitemaps. Your existing sitemaps and data will remain. To clear your existing data, toggle below.</p>
-            <div class="flex items-center mt-3">
-                <label for="overwriteSwitch" class="mr-3 text-gray-700">Overwrite existing data?</label>
-                <div class="relative">
-                    <input type="checkbox" id="overwriteSwitch" class="sr-only">
-                    <div class="block bg-gray-200 w-14 h-8 rounded-full"></div>
-                    <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition transform"></div>
-                </div>
-            </div>`,
+            <label class="inline-flex relative items-center cursor-pointer mt-3">
+                <input type="checkbox" id="overwriteSwitch" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            </label>`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, re-sync it!',
             cancelButtonText: 'Cancel',
-            didOpen: () => {
-                // Add the event listener after the SweetAlert is rendered
-                const overwriteSwitch = document.getElementById('overwriteSwitch');
-                const dot = overwriteSwitch.nextElementSibling.nextElementSibling;
-
-                overwriteSwitch.addEventListener('change', function(event) {
-                    if (event.target.checked) {
-                        dot.classList.add('translate-x-6');
-                        dot.classList.remove('translate-x-0');
-                    } else {
-                        dot.classList.add('translate-x-0');
-                        dot.classList.remove('translate-x-6');
-                    }
-                });
-            },
             preConfirm: () => {
                 // Get the state of the toggle switch
                 const isOverwrite = document.getElementById('overwriteSwitch').checked;
