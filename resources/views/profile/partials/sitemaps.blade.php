@@ -193,6 +193,21 @@
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, re-sync it!',
             cancelButtonText: 'Cancel',
+            didOpen: () => {
+                // Add the event listener after the SweetAlert is rendered
+                const overwriteSwitch = document.getElementById('overwriteSwitch');
+                const dot = overwriteSwitch.nextElementSibling.nextElementSibling;
+
+                overwriteSwitch.addEventListener('change', function(event) {
+                    if (event.target.checked) {
+                        dot.classList.add('translate-x-6');
+                        dot.classList.remove('translate-x-0');
+                    } else {
+                        dot.classList.add('translate-x-0');
+                        dot.classList.remove('translate-x-6');
+                    }
+                });
+            },
             preConfirm: () => {
                 // Get the state of the toggle switch
                 const isOverwrite = document.getElementById('overwriteSwitch').checked;
@@ -210,20 +225,6 @@
                 // Submit the form
                 document.getElementById('resync-form').submit();
             }
-        }).then(() => {
-            // Add the event listener after the SweetAlert is rendered
-            const overwriteSwitch = document.getElementById('overwriteSwitch');
-            const dot = overwriteSwitch.nextElementSibling.nextElementSibling;
-
-            overwriteSwitch.addEventListener('change', function(event) {
-                if (event.target.checked) {
-                    dot.classList.add('translate-x-6');
-                    dot.classList.remove('translate-x-0');
-                } else {
-                    dot.classList.add('translate-x-0');
-                    dot.classList.remove('translate-x-6');
-                }
-            });
         });
     }
 </script>
