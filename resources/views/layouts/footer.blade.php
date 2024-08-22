@@ -91,11 +91,12 @@
             Bug Report
         </button>
 
-        <div id="bug-report-form-container">
+        <div id="bug-report-form-container" class="mr-4">
             <button id="close-bug-report" class="close-button">&times;</button>
             <form id="bug-report-form" enctype="multipart/form-data">
                 @csrf
                 <h2>Report a Bug</h2>
+                <p class="text-sm text-gray-700">Please provide as much detail as possible about the issue you're experiencing. Your feedback helps us improve and ensures a better experience for everyone.</p>
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required>
 
@@ -172,6 +173,9 @@
                     }).then(() => {
                         // Restore the form and remove the spinner
                         spinnerOverlay.remove();
+                        // Clear the form inputs
+                        document.getElementById('bug-report-form').reset();
+
                     });
                 })
                 .catch(error => {
