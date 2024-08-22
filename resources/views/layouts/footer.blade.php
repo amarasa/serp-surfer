@@ -82,7 +82,114 @@
 
         <p class="text-xs text-gray-500">&copy; {{ date('Y')}}. SERP Surfer. All rights reserved.</p>
     </div>
+
+    <div id="bug-report-tab" class="mr-4">
+        <button id="bug-report-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+                <path d="M256 0c53 0 96 43 96 96l0 3.6c0 15.7-12.7 28.4-28.4 28.4l-135.1 0c-15.7 0-28.4-12.7-28.4-28.4l0-3.6c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4l112 0c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5l64.3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6L272 240c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 239.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64.3 0c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z" />
+            </svg>
+            Bug Report
+        </button>
+
+        <div id="bug-report-form-container">
+            <button id="close-bug-report" class="close-button">&times;</button>
+            <form id="bug-report-form" enctype="multipart/form-data">
+                @csrf
+                <h2>Report a Bug</h2>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+
+                <label for="screenshots">Screenshots:</label>
+                <input type="file" id="screenshots" name="screenshots[]" multiple>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
     <script>
+        document.getElementById('bug-report-button').addEventListener('click', function() {
+            const formContainer = document.getElementById('bug-report-form-container');
+            if (formContainer.classList.contains('open')) {
+                formContainer.classList.remove('open');
+                setTimeout(() => {
+                    formContainer.style.display = 'none';
+                }, 500); // Wait for the slide-up transition to complete before hiding
+            } else {
+                formContainer.style.display = 'block';
+                setTimeout(() => {
+                    formContainer.classList.add('open');
+                }, 10); // Add a slight delay to ensure the display change is applied before the transition
+            }
+        });
+
+        document.getElementById('close-bug-report').addEventListener('click', function() {
+            const formContainer = document.getElementById('bug-report-form-container');
+            formContainer.classList.remove('open');
+            setTimeout(() => {
+                formContainer.style.display = 'none';
+            }, 500); // Wait for the slide-up transition to complete before hiding
+        });
+
+        document.getElementById('bug-report-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Fade out the form and show the spinner
+            const formContainer = document.getElementById('bug-report-form-container');
+            const spinnerOverlay = document.createElement('div');
+            spinnerOverlay.classList.add('spinner-overlay');
+            spinnerOverlay.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="spinner">
+            <path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z"/>
+        </svg>`;
+
+            formContainer.style.position = 'relative';
+            formContainer.appendChild(spinnerOverlay);
+
+            let formData = new FormData(this);
+
+            fetch('/submit-bug-report', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Restore the form and remove the spinner
+                        spinnerOverlay.remove();
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was an error submitting your bug report. Please try again later.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Restore the form and remove the spinner
+                        spinnerOverlay.remove();
+                    });
+                });
+        });
+
+
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Tippy for elements with the class "tooltip" with a specific theme
             tippy('.tooltip', {

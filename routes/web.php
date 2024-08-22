@@ -7,10 +7,14 @@ use App\Http\Controllers\QueueController;
 use App\Http\Controllers\UrlsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\MailerController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/submit-bug-report', [MailerController::class, 'submitBugReport'])->name('submit.bug.report');
+
 
 Route::get('/privacy-policy', function () {
     return view('privacy');
