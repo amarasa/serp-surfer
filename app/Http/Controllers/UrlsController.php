@@ -57,18 +57,31 @@ class UrlsController extends Controller
         return view('dashboard', compact('domains', 'urls', 'selectedDomain', 'sitemapId'));
     }
 
-    public function indexHistory()
+    public function indexHistory(Request $request)
     {
         // Get the logged-in user
         $user = auth()->user();
 
-        // Retrieve the sitemaps associated with the user
-        $sitemaps = $user->sitemaps;
+        // Get the selected domain from the request, if any
+        $selectedDomain = $request->get('domain');
 
-        // Fetch all indexing results associated with the user's sitemaps
+        // Retrieve the sitemaps associated with the user
+        $sitemaps = $user->sitemaps();
+
+        // Filter sitemaps by the selected domain if provided
+        if ($selectedDomain) {
+            $sitemaps = $sitemaps->where('url', $selectedDomain);
+        }
+
+        $sitemaps = $sitemaps->get();
+
+        // Fetch all indexing results associated with the user's filtered sitemaps
         $indexingResults = IndexingResult::whereIn('sitemap_id', $sitemaps->pluck('id'))->get();
 
-        // Pass the indexing results to the view
-        return view('profile.history', compact('indexingResults'));
+        // Fetch all unique domain URLs for the dropdown
+        $domains = $user->sitemaps->pluck('url')->unique();
+
+        // Pass the indexing results and domains to the view
+        return view('profile.history', compact('indexingResults', 'domains', 'selectedDomain'));
     }
 }
