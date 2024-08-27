@@ -59,6 +59,9 @@ class UrlsController extends Controller
 
     public function indexHistory(Request $request)
     {
+        // Mark that the user has visited the Index History page
+        session(['index_history_visited' => true]);
+
         // Get the logged-in user
         $user = auth()->user();
 

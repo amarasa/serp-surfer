@@ -48,17 +48,17 @@
                 <p class="text-gray-700 dark:text-gray-300">No indexing history found.</p>
             </div>
             @else
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+            <div class="bg-white overflow-hidden">
+                <ul>
                     @foreach ($indexingResults as $result)
-                    <li class="p-4 {{ $loop->odd ? 'bg-white dark:bg-gray-800' : 'bg-gray-100 dark:bg-gray-700' }}">
+                    <li class="p-4 {{ $loop->odd ? 'bg-white' : 'bg-gray-100' }}">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $result->url }}</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Indexed {{ $result->index_date->diffForHumans() }}</p>
+                                <p class="text-sm text-gray-500 ">Indexed {{ $result->index_date->diffForHumans() }}</p>
                             </div>
                             <div class="ml-4">
-                                <span class="text-xs text-green-700 dark:text-green-500 bg-green-100 dark:bg-green-800 rounded-full px-2 py-1">Indexed</span>
+                                <span class="text-xs text-green-700 bg-green-100 rounded-full px-2 py-1">Indexed</span>
                             </div>
                         </div>
                     </li>
