@@ -70,16 +70,18 @@ class UrlsController extends Controller
 
         // Filter sitemaps by the selected domain if provided
         if ($selectedDomain) {
-            $sitemaps = $sitemaps->where('url', $selectedDomain);
+            $sitemaps = $sitemaps->where('url', 'like', "%$selectedDomain%");
         }
 
         $sitemaps = $sitemaps->get();
 
         // Fetch all indexing results associated with the user's filtered sitemaps
-        $indexingResults = IndexingResult::whereIn('sitemap_id', $sitemaps->pluck('id'))->get();
+        $indexingResults = IndexingResult::whereIn('sitemap_id', $sitemaps->pluck('id'))->paginate(12);
 
-        // Fetch all unique domain URLs for the dropdown
-        $domains = $user->sitemaps->pluck('url')->unique();
+        // Extract domain names from sitemap URLs and remove duplicates
+        $domains = $user->sitemaps->pluck('url')->map(function ($url) {
+            return parse_url($url, PHP_URL_HOST);
+        })->unique();
 
         // Pass the indexing results and domains to the view
         return view('profile.history', compact('indexingResults', 'domains', 'selectedDomain'));

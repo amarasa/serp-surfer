@@ -65,7 +65,13 @@
                     @endforeach
                 </ul>
             </div>
+
+            <!-- Pagination Links -->
+            <div class="mt-4">
+                {{ $indexingResults->links() }}
+            </div>
             @endif
+
         </div>
     </div>
 </x-app-layout>
