@@ -43,22 +43,23 @@
     <!-- Indexing History Table -->
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            @if($selectedDomain)
             @if($indexingResults->isEmpty())
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <p class="text-gray-700 dark:text-gray-300">No indexing history found.</p>
             </div>
             @else
-            <div class="bg-white overflow-hidden">
-                <ul>
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach ($indexingResults as $result)
-                    <li class="p-4 {{ $loop->odd ? 'bg-white' : 'bg-gray-100' }}">
+                    <li class="p-4 {{ $loop->odd ? 'bg-white dark:bg-gray-800' : 'bg-gray-300 dark:bg-gray-700' }}">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $result->url }}</p>
-                                <p class="text-sm text-gray-500 ">Indexed {{ $result->index_date->diffForHumans() }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Indexed {{ $result->index_date->diffForHumans() }}</p>
                             </div>
                             <div class="ml-4">
-                                <span class="text-xs text-green-700 bg-green-100 rounded-full px-2 py-1">Indexed</span>
+                                <span class="text-xs text-green-700 dark:text-green-500 bg-green-100 dark:bg-green-800 rounded-full px-2 py-1">Indexed</span>
                             </div>
                         </div>
                     </li>
@@ -71,6 +72,12 @@
                 {{ $indexingResults->links() }}
             </div>
             @endif
+            @else
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <p class="text-gray-700 dark:text-gray-300">Please select a domain to view history.</p>
+            </div>
+            @endif
+
 
         </div>
     </div>
