@@ -47,10 +47,10 @@ Schedule::job(new Janitor)->everyMinute();
 /* 
     This job is responsible for submitted URLs to GSC for indexing. This should run once every 6 hours
 */
-Schedule::job(new SubmitIndexingJob)->everyMinute();
+Schedule::job(new SubmitIndexingJob)->everySixHours();
 
 /* 
     This job is responsible for scanning URLs in the index_queue to see if they've been indexed, so we can update the status and trigger an email.
-    This should be set to every 1 hour after testing
+    This should be set to every 2 hours after testing
 */
-Schedule::job(new CheckIndexingStatusJob)->everyMinute();
+Schedule::job(new CheckIndexingStatusJob)->everyTwoHours();
