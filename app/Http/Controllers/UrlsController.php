@@ -76,7 +76,9 @@ class UrlsController extends Controller
         $sitemaps = $sitemaps->get();
 
         // Fetch all indexing results associated with the user's filtered sitemaps
-        $indexingResults = IndexingResult::whereIn('sitemap_id', $sitemaps->pluck('id'))->paginate(12);
+        $indexingResults = IndexingResult::whereIn('sitemap_id', $sitemaps->pluck('id'))
+            ->orderBy('index_date', 'desc')
+            ->paginate(12);
 
         // Extract domain names from sitemap URLs and remove duplicates
         $domains = $user->sitemaps->pluck('url')->map(function ($url) {
