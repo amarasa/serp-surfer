@@ -19,6 +19,10 @@ class IndexingResult extends Model
         'sitemap_id'
     ];
 
+    protected $casts = [
+        'index_date' => 'datetime',
+    ];
+
     /**
      * Get the sitemap that owns the indexing result.
      */
