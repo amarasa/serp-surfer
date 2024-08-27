@@ -59,11 +59,21 @@ class UrlsController extends Controller
 
     public function indexHistory(Request $request)
     {
-        // Mark that the user has visited the Index History page
-        session(['index_history_visited' => true]);
 
         // Get the logged-in user
         $user = auth()->user();
+
+        // Check if the user has visited the Index History page
+        $featureInteractions = $user->feature_interactions ?? [];
+
+        $hasVisitedIndexHistory = isset($featureInteractions['index_history']) && $featureInteractions['index_history'];
+
+        // If the user has not visited the Index History page, mark it as visited
+        if (!$hasVisitedIndexHistory) {
+            $featureInteractions['index_history'] = true;
+            $user->feature_interactions = $featureInteractions;
+            $user->save();
+        }
 
         // Get the selected domain from the request, if any
         $selectedDomain = $request->get('domain');

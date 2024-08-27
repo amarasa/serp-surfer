@@ -49,12 +49,14 @@
                         </x-dropdown-link>
                         <x-dropdown-link :href="route('index.history')">
                             {{ __('Index History') }}
-                            @if(!session('index_history_visited'))
+                            @if(!auth()->user()->hasVisitedFeature('index_history'))
                             <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 New!
                             </span>
                             @endif
                         </x-dropdown-link>
+
+
 
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

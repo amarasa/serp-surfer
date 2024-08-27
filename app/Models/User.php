@@ -28,6 +28,12 @@ class User extends Authenticatable
         'google_refresh_token',
     ];
 
+    // Accessor to check if the user has visited a specific feature
+    public function hasVisitedFeature($feature)
+    {
+        return $this->feature_interactions[$feature] ?? false;
+    }
+
     public function sitemaps(): BelongsToMany
     {
         return $this->belongsToMany(Sitemap::class)->withTimestamps();
