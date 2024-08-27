@@ -23,6 +23,27 @@
             </form>
             @endif
             </p>
+            @if ($workers->isEmpty())
+            <p class="text-gray-500 dark:text-gray-400">No active service workers.</p>
+            @else
+            <div class="sitemaps-table mt-6">
+                <div class="overflow-x-auto">
+                    <p>In order to use SERP Surfer's indexing feature, you must first add our Google Services Workers to your Google Search Console.</p>
+                    <p>Please add the following as users to your Search Console with <span class="bold">Owner</span> permissions:</p>
+                    <ul>
+                        @foreach ($workers as $worker)
+                        <li>{{ $worker->address }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Pagination Links -->
+            <div class="mt-4">
+                {{ $workers->links() }}
+            </div>
+
+            @endif
             <div class="sitemaps-table mt-6">
                 @if($sitemaps->count() > 0)
                 <div class="overflow-x-auto">

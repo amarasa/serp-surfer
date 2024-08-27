@@ -43,12 +43,15 @@ class GoogleAuthController extends Controller
 
     public function googleConnectorProfilePage(Request $request): View
     {
+        $workers = ServiceWorker::orderBy('address', 'asc')->paginate(12);
+
         $user = $request->user();
         $sitemaps = $user->sitemaps; // Changed to fetch sitemaps via relationship
 
         return view('profile.google', [
             'user' => $user,
             'sitemaps' => $sitemaps,
+            'workers' => $workers
         ]);
     }
 
