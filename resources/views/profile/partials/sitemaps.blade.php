@@ -26,17 +26,18 @@
             @if ($workers->isEmpty())
             <p class="text-gray-500 dark:text-gray-400">No active service workers.</p>
             @else
-            <div class="sitemaps-table mt-6">
-                <div class="overflow-x-auto">
-                    <p>In order to use SERP Surfer's indexing feature, you must first add our Google Services Workers to your Google Search Console.</p>
-                    <p>Please add the following as users to your Search Console with <span class="bold">Owner</span> permissions:</p>
-                    <ul>
+            <div class="service-workers-list mt-6">
+                <div class="overflow-x-auto p-6">
+                    <p class="mb-4 text-gray-700">In order to use SERP Surfer's indexing feature, you must first add our Google Services Workers to your Google Search Console.</p>
+                    <p class="mb-4 text-gray-700">Please add the following as users to your Search Console with <span class="font-bold">Owner</span> permissions:</p>
+                    <ul class="list-disc list-inside space-y-2">
                         @foreach ($workers as $worker)
-                        <li>{{ $worker->address }}</li>
+                        <li class="text-gray-800">{{ $worker->address }}</li>
                         @endforeach
                     </ul>
                 </div>
             </div>
+
 
             <!-- Pagination Links -->
             <div class="mt-4">
