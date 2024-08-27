@@ -44,4 +44,9 @@ class Sitemap extends Model
     {
         return $this->hasMany(IndexQueue::class);
     }
+
+    public function indexingResults()
+    {
+        return $this->hasMany(IndexingResult::class);
+    }
 }

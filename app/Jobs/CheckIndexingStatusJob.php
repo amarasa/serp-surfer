@@ -15,6 +15,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Symfony\Component\DomCrawler\Crawler;
+use App\Models\IndexingResult;
 
 class CheckIndexingStatusJob implements ShouldQueue
 {
@@ -67,6 +68,14 @@ class CheckIndexingStatusJob implements ShouldQueue
                     if ($user && $user->email) {
                         Mail::to($user->email)->send(new IndexingSuccessNotification($url, $submissionCount));
                     }
+
+                    // Insert a new record into the indexing_results table
+                    IndexingResult::create([
+                        'url' => $url,
+                        'index_date' => now(),
+                        'sitemap_id' => $sitemapId,
+                    ]);
+
 
                     $item->delete();
 
