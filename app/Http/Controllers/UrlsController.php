@@ -68,20 +68,23 @@ class UrlsController extends Controller
         // Get the selected domain from the request, if any
         $selectedDomain = $request->get('domain');
 
+        // Initialize the indexing results as an empty collection by default
+        $indexingResults = collect();
+
         // Retrieve the sitemaps associated with the user
         $sitemaps = $user->sitemaps();
 
-        // Filter sitemaps by the selected domain if provided
+        // Fetch indexing results only if a domain is selected
         if ($selectedDomain) {
+            // Filter sitemaps by the selected domain
             $sitemaps = $sitemaps->where('url', 'like', "%$selectedDomain%");
+            $sitemaps = $sitemaps->get();
+
+            // Fetch all indexing results associated with the user's filtered sitemaps
+            $indexingResults = IndexingResult::whereIn('sitemap_id', $sitemaps->pluck('id'))
+                ->orderBy('index_date', 'desc')
+                ->paginate(12);
         }
-
-        $sitemaps = $sitemaps->get();
-
-        // Fetch all indexing results associated with the user's filtered sitemaps
-        $indexingResults = IndexingResult::whereIn('sitemap_id', $sitemaps->pluck('id'))
-            ->orderBy('index_date', 'desc')
-            ->paginate(12);
 
         // Extract domain names from sitemap URLs and remove duplicates
         $domains = $user->sitemaps->pluck('url')->map(function ($url) {
