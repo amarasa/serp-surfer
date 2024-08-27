@@ -49,7 +49,7 @@
                 <p class="text-gray-700 dark:text-gray-300">No indexing history found.</p>
             </div>
             @else
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden sm:rounded-lg">
                 <ul>
                     @foreach ($indexingResults as $result)
                     <li class="p-4 {{ $loop->odd ? 'bg-white dark:bg-gray-800' : 'bg-gray-100 dark:bg-gray-700' }}">
