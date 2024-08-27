@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\SitemapUrl;
 use App\Models\UrlList;
 use App\Models\IndexQueue;
+use App\Models\IndexingResult;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -53,5 +55,20 @@ class UrlsController extends Controller
         }
 
         return view('dashboard', compact('domains', 'urls', 'selectedDomain', 'sitemapId'));
+    }
+
+    public function indexHistory()
+    {
+        // Get the logged-in user
+        $user = auth()->user();
+
+        // Retrieve the sitemaps associated with the user
+        $sitemaps = $user->sitemaps;
+
+        // Fetch all indexing results associated with the user's sitemaps
+        $indexingResults = IndexingResult::whereIn('sitemap_id', $sitemaps->pluck('id'))->get();
+
+        // Pass the indexing results to the view
+        return view('profile.history', compact('indexingResults'));
     }
 }

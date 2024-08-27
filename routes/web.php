@@ -44,6 +44,7 @@ Route::middleware('auth', 'checkSuspended')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/google', [GoogleAuthController::class, 'googleConnectorProfilePage'])->name('gsc');
+    Route::get('/profile/history', [UrlsController::class, 'indexHistory'])->name('index.history');
 
     //-- Google Search Console
     Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
