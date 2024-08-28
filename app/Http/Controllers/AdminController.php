@@ -10,6 +10,9 @@ use App\Models\SitemapUrl;
 use App\Models\ServiceWorker;
 use App\Models\IndexQueue;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\AutoScanSitemapsJob;
+use App\Jobs\RemoveOldUrlsJob;
+use App\Jobs\SubmitIndexingJob;
 
 class AdminController extends Controller
 {
@@ -192,5 +195,77 @@ class AdminController extends Controller
         // Fetch the updated list of workers and return to the view
         $workers = ServiceWorker::orderBy('address', 'asc')->paginate(12);
         return view('admin.index', compact('workers'))->with('success', 'Service Worker added successfully.');
+    }
+
+
+    public function ServerControls()
+    {
+        $ayoo = 'Server Controls';
+        return view('admin.index', compact('ayoo'));
+    }
+
+    public function forceRunAutoScan(Request $request)
+    {
+        // Dispatch the AutoScanSitemapsJob
+        dispatch(new AutoScanSitemapsJob());
+
+        // Log the manual triggering of the job
+        Log::info('AutoScanSitemapsJob manually triggered by admin.');
+
+        // Optionally, provide feedback to the user
+        return redirect()->back()->with('success', 'AutoScanSitemapsJob has been triggered successfully.');
+    }
+
+    public function forceRemoveOldJobs(Request $request)
+    {
+        // Dispatch the AutoScanSitemapsJob
+        dispatch(new RemoveOldUrlsJob());
+
+        // Log the manual triggering of the job
+        Log::info('RemoveOldUrlsJob manually triggered by admin.');
+
+        // Optionally, provide feedback to the user
+        return redirect()->back()->with('success', 'RemoveOldUrlsJob has been triggered successfully.');
+    }
+    public function forceIndexing(Request $request)
+    {
+        // Dispatch the AutoScanSitemapsJob
+        dispatch(new SubmitIndexingJob());
+
+        // Log the manual triggering of the job
+        Log::info('SubmitIndexingJob manually triggered by admin.');
+
+        // Optionally, provide feedback to the user
+        return redirect()->back()->with('success', 'SubmitIndexingJob has been triggered successfully.');
+    }
+    public function forceCheckIndexStatus(Request $request)
+    {
+        // Dispatch the AutoScanSitemapsJob
+        dispatch(new CheckIndexingStatusJob());
+
+        // Log the manual triggering of the job
+        Log::info('CheckIndexingStatusJob manually triggered by admin.');
+
+        // Optionally, provide feedback to the user
+        return redirect()->back()->with('success', 'CheckIndexingStatusJob has been triggered successfully.');
+    }
+    public function clearCache(Request $request)
+    {
+        // Clear application cache
+        \Artisan::call('cache:clear');
+
+        // Clear route cache
+        \Artisan::call('route:clear');
+
+        // Clear config cache
+        \Artisan::call('config:clear');
+
+        // Clear compiled view files
+        \Artisan::call('view:clear');
+
+        Log::info('clearCache manually triggered by admin.');
+
+        // Optionally, provide feedback to the user
+        return redirect()->back()->with('success', 'Cache has been cleared successfully.');
     }
 }

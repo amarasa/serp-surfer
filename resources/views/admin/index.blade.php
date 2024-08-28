@@ -26,6 +26,10 @@
                     <a href="{{ route('service.workers') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
                         Google Service Workers
                     </a>
+                    </a>
+                    <a href="{{ route('server.controls') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
+                        Server Controls
+                    </a>
                 </nav>
             </div>
         </div>
@@ -41,6 +45,8 @@
                 @include('admin.partials.urls-list')
                 @elseif (Route::currentRouteName() == 'service.workers')
                 @include('admin.partials.google-service-worker')
+                @elseif (Route::currentRouteName() == 'server.controls')
+                @include('admin.partials.server-controls')
                 @else
                 <p>Select an option from the menu.</p>
                 @endif

@@ -85,6 +85,13 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
 
     Route::get('/admin/workers', [AdminController::class, 'GoogleServiceWorkers'])->name('service.workers');
     Route::post('/admin/workers', [AdminController::class, 'AddGoogleServiceWorkers'])->name('add.service.workers');
+
+    Route::get('/admin/server-controls', [AdminController::class, 'ServerControls'])->name('server.controls');
+    Route::post('/admin/force-run-autoscan', [AdminController::class, 'forceRunAutoScan'])->name('forceRunAutoScan');
+    Route::post('/admin/force-remove-old-jobs', [AdminController::class, 'forceRemoveOldJobs'])->name('forceRemoveOldJobs');
+    Route::post('/admin/force-indexing', [AdminController::class, 'forceIndexing'])->name('forceIndexing');
+    Route::post('/admin/force-check-index-status', [AdminController::class, 'forceCheckIndexStatus'])->name('forceCheckIndexStatus');
+    Route::post('/admin/clear-cache', [AdminController::class, 'clearCache'])->name('clearCache');
 });
 
 //-- tests
