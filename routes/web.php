@@ -44,6 +44,7 @@ Route::middleware('auth', 'checkSuspended')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/profile/google', [GoogleAuthController::class, 'googleConnectorProfilePage'])->name('gsc');
+    Route::get('/profile/history', [UrlsController::class, 'indexHistory'])->name('index.history');
 
     //-- Google Search Console
     Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -84,6 +85,16 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
 
     Route::get('/admin/workers', [AdminController::class, 'GoogleServiceWorkers'])->name('service.workers');
     Route::post('/admin/workers', [AdminController::class, 'AddGoogleServiceWorkers'])->name('add.service.workers');
+
+    Route::get('/admin/server-controls', [AdminController::class, 'ServerControls'])->name('server.controls');
+    Route::post('/admin/force-run-autoscan', [AdminController::class, 'forceRunAutoScan'])->name('forceRunAutoScan');
+    Route::post('/admin/force-remove-old-jobs', [AdminController::class, 'forceRemoveOldJobs'])->name('forceRemoveOldJobs');
+    Route::post('/admin/force-indexing', [AdminController::class, 'forceIndexing'])->name('forceIndexing');
+    Route::post('/admin/force-check-index-status', [AdminController::class, 'forceCheckIndexStatus'])->name('forceCheckIndexStatus');
+    Route::post('/admin/clear-cache', [AdminController::class, 'clearCache'])->name('clearCache');
+
+    Route::get('/admin/email-builder', [AdminController::class, 'emailBuilder'])->name('email.builder');
+    Route::post('/send-email', [MailerController::class, 'sendEmail'])->name('send.email');
 });
 
 //-- tests

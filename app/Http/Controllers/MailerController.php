@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Mail\BugReportMail;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\NewsletterEmail;
+use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 
 class MailerController extends Controller
 {
@@ -27,5 +29,19 @@ class MailerController extends Controller
         Mail::to(env('BUG_REPORT_EMAIL'))->send(new BugReportMail($name, $email, $message, $attachment));
 
         return response()->json(['message' => 'Bug report submitted successfully.']);
+    }
+
+    public function sendEmail(Request $request)
+    {
+        $htmlContent = $request->input('html');
+        $cssContent = $request->input('css');
+
+        // Combine HTML and CSS into one inline style (using a package or custom logic)
+
+        $user = auth()->user(); // Assuming you're sending the email to the logged-in user
+
+        Mail::to($user->email)->send(new NewsletterEmail($htmlContent, $cssContent));
+
+        return response()->json(['success' => 'Email sent successfully!']);
     }
 }

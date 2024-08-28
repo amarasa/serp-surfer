@@ -120,7 +120,7 @@
                                     $lastProcessed = $sitemap->sitemapUrls()->latest()->first();
                                     @endphp
                                     @if ($lastProcessed)
-                                    {{ $lastProcessed->created_at->diffForHumans() }}
+                                    {{ $lastProcessed->updated_at->diffForHumans() }}
                                     @else
                                     Waiting in queue
                                     @endif

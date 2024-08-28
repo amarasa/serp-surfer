@@ -25,7 +25,12 @@ class AutoScanSitemapsJob implements ShouldQueue
 
         foreach ($sitemaps as $sitemap) {
             Log::info("Scanning sitemap: " . $sitemap->url);
+
+            // Call the function that processes the sitemap
             $this->scanSitemap($sitemap->url);
+
+            // Update the updated_at column of the sitemap
+            $sitemap->touch();
         }
     }
 

@@ -28,34 +28,16 @@ class User extends Authenticatable
         'google_refresh_token',
     ];
 
-    public function sitemaps(): BelongsToMany
-    {
-        return $this->belongsToMany(Sitemap::class)->withTimestamps();
-    }
-
-    public function serviceWorker()
-    {
-        return $this->belongsTo(ServiceWorker::class);
-    }
-
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'feature_interactions' => 'array',
     ];
 
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
-    }
-
-    public function hasRole($role)
-    {
-        if (is_string($role)) {
-            return $this->roles->contains('name', $role);
-        }
-
-        return !!$role->intersect($this->roles)->count();
-    }
+    // Default features that should be marked as "visited" for new users
+    protected $defaultFeatureInteractions = [
+        'index_history' => true,
+    ];
 
     protected static function boot()
     {
@@ -80,11 +62,49 @@ class User extends Authenticatable
             }
         });
 
+        static::creating(function ($user) {
+            if (is_null($user->feature_interactions)) {
+                $user->feature_interactions = (new static)->defaultFeatureInteractions;
+            }
+        });
+
         // static::created(function ($user) {
         //     // Assign the next available service worker
         //     $user->assignServiceWorker();
         // });
     }
+
+    // Accessor to check if the user has visited a specific feature
+    public function hasVisitedFeature($feature)
+    {
+        return $this->feature_interactions[$feature] ?? false;
+    }
+
+    public function sitemaps(): BelongsToMany
+    {
+        return $this->belongsToMany(Sitemap::class)->withTimestamps();
+    }
+
+    public function serviceWorker()
+    {
+        return $this->belongsTo(ServiceWorker::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole($role)
+    {
+        if (is_string($role)) {
+            return $this->roles->contains('name', $role);
+        }
+
+        return !!$role->intersect($this->roles)->count();
+    }
+
+
 
     public function assignServiceWorker()
     {
