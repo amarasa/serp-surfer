@@ -268,4 +268,8 @@ class AdminController extends Controller
         // Optionally, provide feedback to the user
         return redirect()->back()->with('success', 'Cache has been cleared successfully.');
     }
+    public function emailBuilder()
+    {
+        return view('admin.email_builder');
+    }
 }

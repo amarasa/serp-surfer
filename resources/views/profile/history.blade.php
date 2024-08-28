@@ -68,9 +68,11 @@
             </div>
 
             <!-- Pagination Links -->
+            <!-- Pagination Links -->
             <div class="mt-4">
-                {{ $indexingResults->links() }}
+                {{ $indexingResults->appends(['domain' => $selectedDomain])->links() }}
             </div>
+
             @endif
             @else
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">

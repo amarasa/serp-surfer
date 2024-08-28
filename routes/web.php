@@ -92,6 +92,9 @@ Route::middleware(['auth', 'checkSuspended', 'role:admin'])->group(function () {
     Route::post('/admin/force-indexing', [AdminController::class, 'forceIndexing'])->name('forceIndexing');
     Route::post('/admin/force-check-index-status', [AdminController::class, 'forceCheckIndexStatus'])->name('forceCheckIndexStatus');
     Route::post('/admin/clear-cache', [AdminController::class, 'clearCache'])->name('clearCache');
+
+    Route::get('/admin/email-builder', [AdminController::class, 'emailBuilder'])->name('email.builder');
+    Route::post('/send-email', [MailerController::class, 'sendEmail'])->name('send.email');
 });
 
 //-- tests
