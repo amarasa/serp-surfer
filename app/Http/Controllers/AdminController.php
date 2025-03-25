@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Jobs\AutoScanSitemapsJob;
 use App\Jobs\RemoveOldUrlsJob;
 use App\Jobs\SubmitIndexingJob;
+use App\Jobs\CheckIndexingStatusJob;
 
 class AdminController extends Controller
 {
